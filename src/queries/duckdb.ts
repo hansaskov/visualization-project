@@ -1,6 +1,8 @@
 
 import * as duckdb from '@duckdb/duckdb-wasm';
 
+const serverUrl = import.meta.env.DEV ? "http://localhost:4321" : "https://visualization-project-agv.pages.dev";
+
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 
 // Select a bundle based on browser checks
@@ -19,7 +21,7 @@ URL.revokeObjectURL(worker_url);
 
 export const c = await db.connect()
 
-await c.insertCSVFromPath('http://localhost:4321/data.csv', {
+await c.insertCSVFromPath(`${serverUrl}/data.csv`, {
     name: 'data',
     detect: true,
     header: true,
