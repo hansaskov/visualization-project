@@ -1,7 +1,7 @@
 
 import * as duckdb from '@duckdb/duckdb-wasm';
 
-const serverUrl = import.meta.env.DEV ? "http://localhost:4321" : "https://visualization-project-agv.pages.dev";
+const serverUrl = import.meta.env.DEV ? "http://localhost:4321" : "visualization-project-agv.pages.dev";
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 
