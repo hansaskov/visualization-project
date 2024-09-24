@@ -9,11 +9,10 @@
 
 <form on:submit|preventDefault={setRes}>
     <label>
-        Select amount
+        Choose how many rows to view 
         <!-- svelte-ignore a11y-no-redundant-roles -->
         <fieldset role="group">
             <input
-                name="select_amount"
                 placeholder="Select Amount"
                 type="number"
                 bind:value={input}
