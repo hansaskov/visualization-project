@@ -8,5 +8,5 @@ export async function getAll(n: number) {
         ORDER BY Name
         LIMIT ${n}
         OFFSET 20
-    `);
+    `).then(v => v.toArray().map((row: any) => row.toJSON()));
 }
