@@ -18,7 +18,7 @@
                 type="number"
                 bind:value={input}
             />
-            <input type="submit" value="Submit" />
+            <button>submit</button>
         </fieldset>
     </label>
 </form>
