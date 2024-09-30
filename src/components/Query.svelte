@@ -2,23 +2,19 @@
     import { executeQuery } from "../queries/select";
     import embed, { type VisualizationSpec } from "vega-embed";
 
-    let queryString = `SELECT genre, SUM("Global_Sales") AS total_sales
+    let queryString = 
+`SELECT genre, SUM("Global_Sales") AS total_sales
 FROM data
 GROUP BY genre
 ORDER BY total_sales DESC
 LIMIT 50`;
 
-    let configString = `{
-    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-    "description": "A bar chart showing total sales by video game genre.",
+    let configString = 
+`{
     "mark": "bar",
     "encoding": {
         "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre"},
-        "y": {"field": "total_sales", "type": "quantitative", "title":"Total Sales"},
-        "tooltip": [
-        {"field": "Genre", "type": "nominal"},
-        {"field": "total_sales", "type": "quantitative", "format": ".2f"}
-        ]
+        "y": {"field": "total_sales", "type": "quantitative", "title":"Total Sales"}
     }
 }`;
 
