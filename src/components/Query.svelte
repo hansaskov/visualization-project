@@ -1,16 +1,14 @@
 <script lang="ts">
     import { executeQuery } from "../queries/select";
-    import embed, { type VisualizationSpec } from 'vega-embed';
+    import embed, { type VisualizationSpec } from "vega-embed";
 
-    let queryString = 
-`SELECT genre, SUM("Global_Sales") AS total_sales
+    let queryString = `SELECT genre, SUM("Global_Sales") AS total_sales
 FROM data
 GROUP BY genre
 ORDER BY total_sales DESC
 LIMIT 50`;
 
-    let configString = 
-`{
+    let configString = `{
     "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
     "description": "A bar chart showing total sales by video game genre.",
     "mark": "bar",
@@ -24,7 +22,7 @@ LIMIT 50`;
     }
 }`;
 
-    let results: Record<string, any>[] | Error = []; 
+    let results: Record<string, any>[] | Error = [];
     let showTable = false;
 
     async function runQueryAndVisualize() {
@@ -35,68 +33,74 @@ LIMIT 50`;
             try {
                 const spec: VisualizationSpec = JSON.parse(configString);
                 spec.data = { values: results };
-                embed('#vis', spec, {width: 400, height: 200});
+                embed("#vis", spec, { width: 400, height: 200 });
             } catch (error) {
                 console.error("Error parsing Vega-Lite config:", error);
-                results = error as Error; 
+                results = error as Error;
             }
         }
     }
 </script>
 
-<section >
+<section>
     <h1 class="text-center">DuckDB & Vega-Lite Explorer</h1>
 
-    <div class="grid">
-        <div>
-            <label for="query">DuckDB Query:</label>
-            <textarea id="query" rows="15" bind:value={queryString}></textarea>
-        </div>
-        <div>
-            <label for="config">Vega-Lite Config:</label>
-            <textarea id="config" rows="15" bind:value={configString}></textarea>
-        </div>
-    </div>
+    <form on:submit|preventDefault={runQueryAndVisualize}>
+        <fieldset>
+            <label
+                >DuckDB Query:
+                <textarea rows="15" bind:value={queryString}/>
+            </label>
 
-    <button class="contrast" on:click={runQueryAndVisualize}>Run & Visualize</button>
+            <label for="config"
+                >Vega-Lite Config:
+                <textarea rows="15" bind:value={configString}/>
+            </label>
+        </fieldset>
+        <button>Run & Visualize</button>
+    </form>
 
     {#if showTable}
         {#if results instanceof Error}
             <div class="alert alert-red">{results.message}</div>
         {:else if results.length > 0}
             {#if results.length <= 1000}
-            <div>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            {#each Object.keys(results[0]) as header}
-                                <th>{header}</th>
-                            {/each}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {#each results as result}
+                <div>
+                    <table class="table">
+                        <thead>
                             <tr>
-                                {#each Object.keys(result) as key}
-                                    <td>{result[key]}</td>
+                                {#each Object.keys(results[0]) as header}
+                                    <th>{header}</th>
                                 {/each}
                             </tr>
-                        {/each}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {#each results as result}
+                                <tr>
+                                    {#each Object.keys(result) as key}
+                                        <td>{result[key]}</td>
+                                    {/each}
+                                </tr>
+                            {/each}
+                        </tbody>
+                    </table>
+                </div>
             {:else}
-                <div class="alert">Table size is {results.length} which exceeds the maximum length of 1000. Please select a smaller table to visualize it.</div>
+                <div class="alert">
+                    Table size is {results.length} which exceeds the maximum length
+                    of 1000. Please select a smaller table to visualize it.
+                </div>
             {/if}
             <div id="vis"></div>
         {:else}
-            <div class="alert">No results to display. Execute a query to see results.</div>
+            <div class="alert">
+                No results to display. Execute a query to see results.
+            </div>
         {/if}
     {/if}
 </section>
 
 <style>
-
     div:has(table) {
         overflow-x: auto;
         overflow-y: auto;
@@ -104,7 +108,7 @@ LIMIT 50`;
         -webkit-overflow-scrolling: touch;
     }
 
-    .grid {
+    fieldset {
         display: grid;
         grid-template-columns: 1fr 2fr;
         gap: 1rem;
