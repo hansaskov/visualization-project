@@ -3,7 +3,7 @@
     import embed, { type VisualizationSpec } from "vega-embed";
 
     let queryString = 
-`SELECT genre, SUM("Global_Sales") AS total_sales
+    `SELECT genre, SUM("Global_Sales") AS total_sales
 FROM data
 GROUP BY genre
 ORDER BY total_sales DESC
@@ -106,8 +106,14 @@ LIMIT 50`;
 
     fieldset {
         display: grid;
-        grid-template-columns: 1fr 2fr;
+        grid-template-columns: 2fr;
         gap: 1rem;
+    }
+
+    @media (min-width: 768px) {
+        fieldset {
+            grid-template-columns: 1fr 2fr;
+        }
     }
 
     textarea {
