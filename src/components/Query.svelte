@@ -26,7 +26,7 @@ LIMIT 10
 <section>
     {#if results instanceof Error}
         {results.message}
-    {:else if results.length > 0}
+    {:else if results.length > 0 && results.length < 1000} 
         <table>
             <thead>
                 <tr>
@@ -45,6 +45,8 @@ LIMIT 10
                 {/each}
             </tbody>
         </table>
+    {:else if results.length > 1000}
+        <p>Table size is {results.length} which exceeds the maximum length of 1000. Please select a smaller table to visualize it</p>
     {:else}
         <p>No results to display. Execute a query to see results.</p>
     {/if}
