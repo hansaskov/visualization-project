@@ -2,11 +2,9 @@
     import { executeQuery } from "../queries/select";
     let results: Record<string, any>[] | Error = [];
     let queryString: string = `
-SELECT *
 FROM data
-ORDER BY Name
+SELECT *
 LIMIT 10
-OFFSET 20
     `.trim();
 
     async function setRes() {
@@ -30,7 +28,6 @@ OFFSET 20
         {results.message}
     {:else if results.length > 0}
         <table>
-            <caption>Query Results</caption>
             <thead>
                 <tr>
                     {#each Object.keys(results[0]) as header}
