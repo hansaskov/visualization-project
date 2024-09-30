@@ -1,95 +1,118 @@
 <script lang="ts">
     import { executeQuery } from "../queries/select";
-    import type  {VisualizationSpec } from 'vega-embed';
-    let results: Record<string, any>[] | Error = [];
-    let queryString: string = `
-SELECT genre, SUM("Global_Sales") AS total_sales
+    import embed, { type VisualizationSpec } from 'vega-embed';
+
+    let queryString = 
+`SELECT genre, SUM("Global_Sales") AS total_sales
 FROM data
 GROUP BY genre
 ORDER BY total_sales DESC
-LIMIT 50
-    `.trim();
+LIMIT 50`;
 
-    let configString: VisualizationSpec = ""
+    let configString = 
+`{
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "description": "A bar chart showing total sales by video game genre.",
+    "mark": "bar",
+    "encoding": {
+        "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre"},
+        "y": {"field": "total_sales", "type": "quantitative", "title":"Total Sales"},
+        "tooltip": [
+        {"field": "Genre", "type": "nominal"},
+        {"field": "total_sales", "type": "quantitative", "format": ".2f"}
+        ]
+    }
+}`;
 
-    async function setRes() {
+    let results: Record<string, any>[] | Error = []; 
+    let showTable = false;
+
+    async function runQueryAndVisualize() {
         results = await executeQuery(queryString);
+        showTable = results instanceof Error || (results && results.length > 0);
+
+        if (results && !(results instanceof Error)) {
+            try {
+                const spec: VisualizationSpec = JSON.parse(configString);
+                spec.data = { values: results };
+                embed('#vis', spec, {width: 400, height: 200});
+            } catch (error) {
+                console.error("Error parsing Vega-Lite config:", error);
+                results = error as Error; 
+            }
+        }
     }
 </script>
 
-<form on:submit|preventDefault={setRes}>
-    <fieldset>
-        <label
-            >Enter your DuckDB query
-            <textarea
-                rows="5"
-                bind:value={queryString}
-                placeholder="Enter your SQL query here"
-            ></textarea>
-        </label>
-        <label
-            >Enter Vega-lite config without the data attribute
-            <textarea
-                rows="5"
-                bind:value={configString}
-                placeholder="Enter your vega-lite config here"
-            ></textarea>
-        </label>
-    </fieldset>
-    <button type="submit">Execute Query</button>
-</form>
+<section >
+    <h1 class="text-center">DuckDB & Vega-Lite Explorer</h1>
 
-<section>
-    {#if results instanceof Error}
-        {results.message}
-    {:else if results.length > 0 && results.length <= 1000}
-        <table>
-            <thead>
-                <tr>
-                    {#each Object.keys(results[0]) as header}
-                        <th scope="col">{header}</th>
-                    {/each}
-                </tr>
-            </thead>
-            <tbody>
-                {#each results as result}
-                    <tr>
-                        {#each Object.keys(result) as key}
-                            <td>{result[key]}</td>
+    <div class="grid">
+        <div>
+            <label for="query">DuckDB Query:</label>
+            <textarea id="query" rows="15" bind:value={queryString}></textarea>
+        </div>
+        <div>
+            <label for="config">Vega-Lite Config:</label>
+            <textarea id="config" rows="15" bind:value={configString}></textarea>
+        </div>
+    </div>
+
+    <button class="contrast" on:click={runQueryAndVisualize}>Run & Visualize</button>
+
+    {#if showTable}
+        {#if results instanceof Error}
+            <div class="alert alert-red">{results.message}</div>
+        {:else if results.length > 0}
+            {#if results.length <= 1000}
+            <div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            {#each Object.keys(results[0]) as header}
+                                <th>{header}</th>
+                            {/each}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each results as result}
+                            <tr>
+                                {#each Object.keys(result) as key}
+                                    <td>{result[key]}</td>
+                                {/each}
+                            </tr>
                         {/each}
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    {:else if results.length > 1000}
-        <p>
-            Table size is {results.length} which exceeds the maximum length of 1000.
-            Please select a smaller table to visualize it
-        </p>
-    {:else}
-        <p>No results to display. Execute a query to see results.</p>
+                    </tbody>
+                </table>
+            </div>
+            {:else}
+                <div class="alert">Table size is {results.length} which exceeds the maximum length of 1000. Please select a smaller table to visualize it.</div>
+            {/if}
+            <div id="vis"></div>
+        {:else}
+            <div class="alert">No results to display. Execute a query to see results.</div>
+        {/if}
     {/if}
 </section>
 
 <style>
-    form > fieldset {
-        display: flex;
-        gap: 1rem; /* Controls the spacing between the text areas */
-        justify-content: space-between; /* Ensure the text areas are evenly spaced */
-        align-items: flex-start; /* Align the text areas at the top */
-        width: 100%; /* Make sure the fieldset takes up the full width */
-    }
 
-    form > fieldset > label {
-        flex: 1; /* Allow each textarea to take up equal space */
-    }
-
-    section:has(table) {
+    div:has(table) {
         overflow-x: auto;
+        overflow-y: auto;
+        height: 40rem;
         -webkit-overflow-scrolling: touch;
     }
 
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1rem;
+    }
+
     textarea {
+        width: 100%;
         font-family: monospace;
+        font-size: medium;
     }
 </style>
