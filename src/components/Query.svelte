@@ -26,7 +26,7 @@ LIMIT 10
 <section>
     {#if results instanceof Error}
         {results.message}
-    {:else if results.length > 0 && results.length < 1000} 
+    {:else if results.length > 0 && results.length <= 1000} 
         <table>
             <thead>
                 <tr>
