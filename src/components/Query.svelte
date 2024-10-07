@@ -1,31 +1,23 @@
 <script lang="ts">
-    import { executeQuery } from "../queries/select";
+    import { executeQuery, queries, type QuerySelection } from "../queries/queries";
     import embed, { type VisualizationSpec } from "vega-embed";
 
-    let queryString = 
-    `SELECT genre, SUM("Global_Sales") AS total_sales
-FROM data
-GROUP BY genre
-ORDER BY total_sales DESC
-LIMIT 50`;
 
-    let configString = 
-`{
-    "mark": "bar",
-    "encoding": {
-        "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre"},
-        "y": {"field": "total_sales", "type": "quantitative", "title":"Total Sales"}
-    }
-}`;
+    let selected: QuerySelection = queries[0];
+
+    let queryString = selected.duckdbQuery;
+    let configString = selected.vegaLiteQuery;
 
     let results: Record<string, any>[] | Error = [];
     let showTable = false;
+
+
 
     async function runQueryAndVisualize() {
         results = await executeQuery(queryString);
         showTable = results instanceof Error || (results && results.length > 0);
 
-        if (results && !(results instanceof Error)) {
+        if (results && !(results instanceof Error) && configString)  {
             try {
                 const spec: VisualizationSpec = JSON.parse(configString);
                 spec.data = { values: results };
@@ -36,12 +28,24 @@ LIMIT 50`;
             }
         }
     }
+
+    function updateForm() {
+        queryString = selected.duckdbQuery;
+        configString = selected.vegaLiteQuery;
+    }
+
 </script>
 
 <section>
-    <h1 class="text-center">DuckDB & Vega-Lite Explorer</h1>
+    <h1 >DuckDB & Vega-Lite Explorer</h1>
+
 
     <form on:submit|preventDefault={runQueryAndVisualize}>
+        <select bind:value={selected} name="Quick select a predefined query" on:change={updateForm}>
+            {#each queries as query}
+                <option value={query}>{query.name}</option>
+            {/each}
+        </select>
         <fieldset>
             <label
                 >DuckDB Query:
@@ -55,10 +59,11 @@ LIMIT 50`;
         </fieldset>
         <button>Run & Visualize</button>
     </form>
+   
 
     {#if showTable}
         {#if results instanceof Error}
-            <div class="alert alert-red">{results.message}</div>
+            <div >{results.message} </div>
         {:else if results.length > 0}
             {#if results.length <= 1000}
                 <div>
