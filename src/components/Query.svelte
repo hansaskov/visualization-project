@@ -30,7 +30,7 @@
             try {
                 const spec: VisualizationSpec = JSON.parse(configString);
                 spec.data = { values: results };
-                embed("#vis", spec, { width: 400, height: 200 });
+                embed("#vis", spec, { width: 800, height: 400 });
             } catch (error) {
                 console.error("Error parsing Vega-Lite config:", error);
                 results = error as Error;
