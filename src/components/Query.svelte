@@ -60,7 +60,7 @@
 </script>
 
 <section>
-    <h1 >DuckDB & Vega-Lite Explorer</h1>
+    <h1 >Visualization Playground</h1>
 
     {#if isLoading}
     <p aria-busy="true">Loading DuckDB...</p>
