@@ -3,7 +3,7 @@ import * as duckdb from '@duckdb/duckdb-wasm';
 
 const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
 
-async function createDuckDB() {
+export async function createDuckDB() {
   // Select a bundle based on browser checks
   const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
 
@@ -21,7 +21,7 @@ async function createDuckDB() {
   return db;
 }
 
-async function createDuckDBConnection(db: duckdb.AsyncDuckDB) {
+export async function createDuckDBConnection(db: duckdb.AsyncDuckDB) {
   const serverUrl = import.meta.env.DEV ? "http://localhost:4321" : "https://visualization-project.pages.dev";
   const c = await db.connect();
   await c.insertCSVFromPath(`${serverUrl}/data.csv`, {
@@ -33,9 +33,14 @@ async function createDuckDBConnection(db: duckdb.AsyncDuckDB) {
   return c;
   
 }
-
-export const db = await createDuckDB();
-export const c = await createDuckDBConnection(db);
-
+export async function executeQuery(c: duckdb.AsyncDuckDBConnection, queryString: string): Promise<Record<string, any>[] | Error> {
+    try {
+        const result = await c.query(queryString);
+        return result.toArray().map((row: any) => row.toJSON());
+    } catch (error) {
+        console.error("Error executing query:", error);
+        return error instanceof Error ? error : new Error(String(error));
+    }
+}
 
 

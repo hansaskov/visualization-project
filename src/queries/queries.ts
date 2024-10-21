@@ -1,14 +1,4 @@
-import { db, c } from "./duckdb";
 
-export async function executeQuery(queryString: string): Promise<Record<string, any>[] | Error> {
-    try {
-        const result = await c.query(queryString);
-        return result.toArray().map((row: any) => row.toJSON());
-    } catch (error) {
-        console.error("Error executing query:", error);
-        return error instanceof Error ? error : new Error(String(error));
-    }
-}
 
 export type QuerySelection = {
     name: string;

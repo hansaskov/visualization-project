@@ -1,8 +1,14 @@
 <script lang="ts">
-    import { executeQuery, queries, type QuerySelection } from "../queries/queries";
+    import type { AsyncDuckDB, AsyncDuckDBConnection } from "@duckdb/duckdb-wasm";
+    import { createDuckDB, createDuckDBConnection, executeQuery } from "../queries/duckdb";
+    import { queries, type QuerySelection } from "../queries/queries";
     import embed, { type VisualizationSpec } from "vega-embed";
+    import { onMount } from "svelte";
 
 
+    let db: AsyncDuckDB | null = null;
+    let c: AsyncDuckDBConnection | null = null;
+    let isLoading = true;
     let selected: QuerySelection = queries[0];
 
     let queryString = selected.duckdbQuery;
@@ -12,9 +18,12 @@
     let showTable = false;
 
 
-
     async function runQueryAndVisualize() {
-        results = await executeQuery(queryString);
+        if (!c) {
+            return
+        }
+
+        results = await executeQuery(c, queryString);
         showTable = results instanceof Error || (results && results.length > 0);
 
         if (results && !(results instanceof Error) && configString)  {
@@ -34,12 +43,28 @@
         configString = selected.vegaLiteQuery;
     }
 
+
+    onMount(async () => {
+        try {
+            db = await createDuckDB();
+            c = await createDuckDBConnection(db);
+            isLoading = false;
+        } catch (error) {
+            console.error("Error initializing DuckDB:", error);
+            results = error as Error;
+            showTable = true;
+            isLoading = false;
+        }
+    });
+
 </script>
 
 <section>
     <h1 >DuckDB & Vega-Lite Explorer</h1>
 
-
+    {#if isLoading}
+    <p aria-busy="true">Loading DuckDB...</p>
+    {:else}
     <form on:submit|preventDefault={runQueryAndVisualize}>
         <select bind:value={selected} name="Quick select a predefined query" on:change={updateForm}>
             {#each queries as query}
@@ -98,6 +123,7 @@
                 No results to display. Execute a query to see results.
             </div>
         {/if}
+    {/if}
     {/if}
 </section>
 
