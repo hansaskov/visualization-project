@@ -1,10 +1,16 @@
 <script lang="ts">
-    import type { AsyncDuckDB, AsyncDuckDBConnection } from "@duckdb/duckdb-wasm";
-    import { createDuckDB, createDuckDBConnection, executeQuery } from "../queries/duckdb";
+    import type {
+        AsyncDuckDB,
+        AsyncDuckDBConnection,
+    } from "@duckdb/duckdb-wasm";
+    import {
+        createDuckDB,
+        createDuckDBConnection,
+        executeQuery,
+    } from "../queries/duckdb";
     import { queries, type QuerySelection } from "../queries/queries";
     import embed, { type VisualizationSpec } from "vega-embed";
     import { onMount } from "svelte";
-
 
     let db: AsyncDuckDB | null = null;
     let c: AsyncDuckDBConnection | null = null;
@@ -17,16 +23,18 @@
     let results: Record<string, any>[] | Error = [];
     let showTable = false;
 
-
     async function runQueryAndVisualize() {
         if (!c) {
-            return
+            results = new Error(
+                "Failed to use db connection when running query",
+            );
+            return;
         }
 
         results = await executeQuery(c, queryString);
         showTable = results instanceof Error || (results && results.length > 0);
 
-        if (results && !(results instanceof Error) && configString)  {
+        if (results && !(results instanceof Error) && configString) {
             try {
                 const spec: VisualizationSpec = JSON.parse(configString);
                 spec.data = { values: results };
@@ -43,7 +51,7 @@
         configString = selected.vegaLiteQuery;
     }
 
-
+    // Code will when the component is mounted into the dom. So it will only run once.
     onMount(async () => {
         try {
             db = await createDuckDB();
@@ -56,74 +64,77 @@
             isLoading = false;
         }
     });
-
 </script>
 
 <section>
-    <h1 >DuckDB & Vega-Lite Explorer</h1>
+    <h1>Visualization Playground</h1>
 
     {#if isLoading}
-    <p aria-busy="true">Loading DuckDB...</p>
+        <p aria-busy="true">Loading DuckDB...</p>
     {:else}
-    <form on:submit|preventDefault={runQueryAndVisualize}>
-        <select bind:value={selected} name="Quick select a predefined query" on:change={updateForm}>
-            {#each queries as query}
-                <option value={query}>{query.name}</option>
-            {/each}
-        </select>
-        <fieldset>
-            <label
-                >DuckDB Query:
-                <textarea rows="15" bind:value={queryString}/>
-            </label>
+        <form on:submit|preventDefault={runQueryAndVisualize}>
+            <select
+                bind:value={selected}
+                name="Quick select a predefined query"
+                on:change={updateForm}
+            >
+                {#each queries as query}
+                    <option value={query}>{query.name}</option>
+                {/each}
+            </select>
+            <fieldset>
+                <label
+                    >DuckDB Query:
+                    <textarea rows="15" bind:value={queryString} />
+                </label>
 
-            <label for="config"
-                >Vega-Lite Config:
-                <textarea rows="15" bind:value={configString}/>
-            </label>
-        </fieldset>
-        <button>Run & Visualize</button>
-    </form>
-   
+                <label for="config"
+                    >Vega-Lite Config:
+                    <textarea rows="15" bind:value={configString} />
+                </label>
+            </fieldset>
+            <button>Run & Visualize</button>
+        </form>
 
-    {#if showTable}
-        {#if results instanceof Error}
-            <div >{results.message} </div>
-        {:else if results.length > 0}
-            {#if results.length <= 1000}
-                <div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                {#each Object.keys(results[0]) as header}
-                                    <th>{header}</th>
-                                {/each}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each results as result}
+        {#if showTable}
+            {#if results instanceof Error}
+                <div>{results.message}</div>
+            {:else if results.length > 0}
+                {#if results.length <= 1000}
+                    <div>
+                        <table class="table">
+                            <thead>
                                 <tr>
-                                    {#each Object.keys(result) as key}
-                                        <td>{result[key]}</td>
+                                    {#each Object.keys(results[0]) as header}
+                                        <th>{header}</th>
                                     {/each}
                                 </tr>
-                            {/each}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                {#each results as result}
+                                    <tr>
+                                        {#each Object.keys(result) as key}
+                                            <td>{result[key]}</td>
+                                        {/each}
+                                    </tr>
+                                {/each}
+                            </tbody>
+                        </table>
+                    </div>
+                {:else}
+                    <div class="alert">
+                        Table size is {results.length} which exceeds the maximum
+                        length of 1000. Please select a smaller table to visualize
+                        it.
+                    </div>
+                {/if}
+                <div id="vis"></div>
             {:else}
                 <div class="alert">
-                    Table size is {results.length} which exceeds the maximum length
-                    of 1000. Please select a smaller table to visualize it.
+                    No results to display. Execute a query to see results.
                 </div>
             {/if}
-            <div id="vis"></div>
-        {:else}
-            <div class="alert">
-                No results to display. Execute a query to see results.
-            </div>
         {/if}
-    {/if}
     {/if}
 </section>
 
