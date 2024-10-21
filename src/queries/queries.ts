@@ -151,5 +151,36 @@ ORDER BY
   ]
 }
 `,
-	},
+	}, 
+    {
+        name: "Show null percentage per column",
+        duckdbQuery: `summarize data`,
+        vegaLiteQuery: `
+{
+    "mark": "bar",
+    "encoding": {
+        "x": {
+        "field": "column_name",
+        "type": "nominal",
+        "sort": "-y",
+        "title": "Column Name"
+        },
+        "y": {
+        "field": "null_percentage",
+        "type": "quantitative",
+        "title": "Null Percentage",
+        "axis": {
+            "format": ".1f"
+        }
+        }
+    },
+    "transform": [
+        {
+        "calculate": "parseFloat(replace(datum.null_percentage, '%', ''))",
+        "as": "null_percentage"
+        }
+    ]
+    }
+        `
+    }
 ];
