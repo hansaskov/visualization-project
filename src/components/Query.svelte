@@ -12,13 +12,17 @@
     import embed, { type VisualizationSpec } from "vega-embed";
     import { onMount } from "svelte";
 
+
     let db: AsyncDuckDB | null = null;
     let c: AsyncDuckDBConnection | null = null;
     let isLoading = true;
-    let selected: QuerySelection = queries[0];
+    let lastSelected: QuerySelection|undefined = queries.find((query) => query.name === sessionStorage.getItem('selectedQuery'));
+    let selected: QuerySelection = lastSelected !== undefined ? lastSelected : queries[0];
 
-    let queryString = selected.duckdbQuery;
-    let configString = selected.vegaLiteQuery;
+    let queryString = sessionStorage.getItem('workingQuerySQL')? 
+    sessionStorage.getItem('workingQuerySQL') : selected.duckdbQuery;
+    let configString = sessionStorage.getItem('workingConfigString')?
+    sessionStorage.getItem('workingConfigString'):selected.vegaLiteQuery;
 
     let results: Record<string, any>[] | Error = [];
     let showTable = false;
@@ -46,9 +50,22 @@
         }
     }
 
+    String.prototype.isEmptyOrUndefined = function() {
+        return this === null || this === undefined || this.trim() === '';
+    };
+
+    async function cashe(query: string,casheName:string) {
+        sessionStorage.setItem(casheName, query);
+    }
+
     function updateForm() {
         queryString = selected.duckdbQuery;
         configString = selected.vegaLiteQuery;
+
+        sessionStorage.setItem('workingQuerySQL', queryString);
+        sessionStorage.setItem('workingConfigString', configString);
+        sessionStorage.setItem('selectedQuery', selected.name);
+        lastSelected = selected;
     }
 
     // Code will when the component is mounted into the dom. So it will only run once.
@@ -57,6 +74,12 @@
             db = await createDuckDB();
             c = await createDuckDBConnection(db);
             isLoading = false;
+            if(sessionStorage.getItem('workingQuerySQL')){
+                queryString = sessionStorage.getItem('workingQuerySQL');
+            }
+            if(sessionStorage.getItem('workingConfigString')){
+                configString = sessionStorage.getItem('workingConfigString');
+            }
         } catch (error) {
             console.error("Error initializing DuckDB:", error);
             results = error as Error;
@@ -64,15 +87,17 @@
             isLoading = false;
         }
     });
+
 </script>
 
 <section>
     <h1>Visualization Playground</h1>
-
     {#if isLoading}
         <p aria-busy="true">Loading DuckDB...</p>
-    {:else}
-        <form on:submit|preventDefault={runQueryAndVisualize}>
+    {/if}
+        <form 
+            on:submit|preventDefault={runQueryAndVisualize}
+        >
             <select
                 bind:value={selected}
                 name="Quick select a predefined query"
@@ -85,17 +110,17 @@
             <fieldset>
                 <label
                     >DuckDB Query:
-                    <textarea rows="15" bind:value={queryString} />
+                    <textarea rows="15" bind:value={queryString}  on:change={cashe(queryString,'workingQuerySQL')}/>
                 </label>
 
                 <label for="config"
                     >Vega-Lite Config:
-                    <textarea rows="15" bind:value={configString} />
+                    <textarea rows="15" bind:value={configString} on:change={cashe(configString, 'workingConfigString')}/>
                 </label>
             </fieldset>
-            <button>Run & Visualize</button>
+                <button disabled={isLoading}>Run & Visualize</button>
         </form>
-
+        {#if !isLoading}
         {#if showTable}
             {#if results instanceof Error}
                 <div>{results.message}</div>
