@@ -80,8 +80,7 @@ LIMIT 15
 	},
 	{
 		name: "llm bubble chart",
-		duckdbQuery: `
-        SELECT 
+		duckdbQuery: `SELECT 
     Name AS game_title,
     Year_of_Release AS release_year,
     Platform AS platform,
@@ -95,11 +94,8 @@ WHERE
     AND Global_Sales > 0
     AND Genre IS NOT NULL
 ORDER BY 
-    release_year ASC;
-
-`,
-		vegaLiteQuery: `
-        {
+    release_year ASC;`,
+		vegaLiteQuery: `{
   "width": 800,
   "height": 600,
   "mark": "circle",
@@ -149,14 +145,12 @@ ORDER BY
       "filter": "datum.global_sales > 0"
     }
   ]
-}
-`,
-	}, 
-    {
-        name: "Show null percentage per column",
-        duckdbQuery: `summarize data`,
-        vegaLiteQuery: `
-{
+}`,
+	},
+	{
+		name: "Show null percentage per column",
+		duckdbQuery: "summarize data",
+		vegaLiteQuery: `{
     "mark": "bar",
     "encoding": {
         "x": {
@@ -181,6 +175,6 @@ ORDER BY
         }
     ]
     }
-        `
-    }
+        `,
+	},
 ];

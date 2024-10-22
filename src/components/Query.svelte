@@ -10,7 +10,9 @@
     } from "../queries/duckdb";
     import { queries, type QuerySelection } from "../queries/queries";
     import embed, { type VisualizationSpec } from "vega-embed";
+    import CodeMirror from "./CodeMirror.svelte";
     import { onMount } from "svelte";
+    import {queryStringStore} from '../store/store.ts'
 
 
     let db: AsyncDuckDB | null = null;
@@ -19,6 +21,7 @@
     let lastSelected: QuerySelection|undefined = queries.find((query) => query.name === sessionStorage.getItem('selectedQuery'));
     let selected: QuerySelection = lastSelected !== undefined ? lastSelected : queries[0];
 
+    
     let queryString = sessionStorage.getItem('workingQuerySQL')? 
     sessionStorage.getItem('workingQuerySQL') : selected.duckdbQuery;
     let configString = sessionStorage.getItem('workingConfigString')?
@@ -27,6 +30,13 @@
     let results: Record<string, any>[] | Error = [];
     let showTable = false;
 
+    queryStringStore.subscribe(value => {
+        if(!c){
+            return;
+        }
+        queryString = value;
+    });
+
     async function runQueryAndVisualize() {
         if (!c) {
             results = new Error(
@@ -34,6 +44,8 @@
             );
             return;
         }
+
+
 
         results = await executeQuery(c, queryString);
         showTable = results instanceof Error || (results && results.length > 0);
@@ -110,7 +122,8 @@
             <fieldset>
                 <label
                     >DuckDB Query:
-                    <textarea rows="15" bind:value={queryString}  on:change={cashe(queryString,'workingQuerySQL')}/>
+                    <!-- <textarea rows="15" bind:value={queryString}  on:change={cashe(queryString,'workingQuerySQL')}/> -->
+                    <CodeMirror bind:value={queryString} on:change={cashe(queryString,'workingQuerySQL')}/>
                 </label>
 
                 <label for="config"
