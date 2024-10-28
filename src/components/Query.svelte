@@ -45,9 +45,7 @@
             return;
         }
 
-
-
-        results = await executeQuery(c, queryString);
+        results = await executeQuery(c, queryString!);
         showTable = results instanceof Error || (results && results.length > 0);
 
         if (results && !(results instanceof Error) && configString) {
@@ -62,12 +60,13 @@
         }
     }
 
-    String.prototype.isEmptyOrUndefined = function() {
-        return this === null || this === undefined || this.trim() === '';
-    };
 
-    async function cashe(query: string,casheName:string) {
-        sessionStorage.setItem(casheName, query);
+    async function cache(query: string | null, cacheName: string ) {
+        if (!query) {
+            sessionStorage.removeItem(cacheName)
+            return;
+        }
+        sessionStorage.setItem(cacheName, query);
     }
 
     function updateForm() {
@@ -120,15 +119,16 @@
                 {/each}
             </select>
             <fieldset>
+                <!-- svelte-ignore a11y-label-has-associated-control -->
                 <label
                     >DuckDB Query:
                     <!-- <textarea rows="15" bind:value={queryString}  on:change={cashe(queryString,'workingQuerySQL')}/> -->
-                    <CodeMirror bind:value={queryString} on:change={cashe(queryString,'workingQuerySQL')}/>
+                    <CodeMirror bind:value={queryString} on:change={() => cache(queryString,'workingQuerySQL')}/>
                 </label>
 
                 <label for="config"
                     >Vega-Lite Config:
-                    <textarea rows="15" bind:value={configString} on:change={cashe(configString, 'workingConfigString')}/>
+                    <textarea rows="15" bind:value={configString} on:change={() => cache(configString, 'workingConfigString')}/>
                 </label>
             </fieldset>
                 <button disabled={isLoading}>Run & Visualize</button>

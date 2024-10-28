@@ -177,4 +177,24 @@ ORDER BY
     }
         `,
 	},
+  {
+		name: "Unique values in columns",
+		duckdbQuery: 
+`SELECT 'Genre' as column_name, COUNT(DISTINCT Genre) as unique_count
+FROM data
+UNION ALL
+SELECT 'Platform', COUNT(DISTINCT Platform)
+FROM data
+UNION ALL
+SELECT 'Publisher', COUNT(DISTINCT Publisher)
+FROM data
+UNION ALL
+SELECT 'Developer', COUNT(DISTINCT Developer)
+FROM data
+UNION ALL
+SELECT 'Rating', COUNT(DISTINCT Rating)
+FROM data
+ORDER BY column_name;`,
+		vegaLiteQuery: ``,
+	},
 ];
