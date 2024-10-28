@@ -13,12 +13,12 @@ LIMIT 50`,
 		vegaLiteQuery: "",
 	},
 	{
-		name: "Sales by Genre",
+		name: "Top 10 publishers",
 		duckdbQuery: `SELECT genre, SUM("Global_Sales") AS total_sales
 FROM data
 GROUP BY genre
 ORDER BY total_sales DESC
-LIMIT 50`,
+LIMIT 10`,
 		vegaLiteQuery: `{
     "mark": "bar",
     "encoding": {
