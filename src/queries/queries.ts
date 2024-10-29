@@ -177,10 +177,9 @@ ORDER BY
     }
         `,
 	},
-  {
+	{
 		name: "Unique values in columns",
-		duckdbQuery: 
-`SELECT 'Genre' as column_name, COUNT(DISTINCT Genre) as unique_count
+		duckdbQuery: `SELECT 'Genre' as column_name, COUNT(DISTINCT Genre) as unique_count
 FROM data
 UNION ALL
 SELECT 'Platform', COUNT(DISTINCT Platform)
@@ -196,5 +195,436 @@ SELECT 'Rating', COUNT(DISTINCT Rating)
 FROM data
 ORDER BY column_name;`,
 		vegaLiteQuery: ``,
+	},
+	{
+		name: "boksplot 3 in 1 normalized horizontal",
+		duckdbQuery: `SELECT 
+    ("Global_Sales" - MIN("Global_Sales") OVER ()) / (MAX("Global_Sales") OVER () - MIN("Global_Sales") OVER ()) AS Global_Sales,
+    ("Critic_Score" - MIN("Critic_Score") OVER ()) / (MAX("Critic_Score") OVER () - MIN("Critic_Score") OVER ()) AS Critic_Score,
+    (CAST("User_Score" AS DOUBLE) - MIN(CAST("User_Score" AS DOUBLE)) OVER ()) / (MAX(CAST("User_Score" AS DOUBLE)) OVER () - MIN(CAST("User_Score" AS DOUBLE)) OVER ()) AS User_Score
+FROM data
+WHERE 
+    "Global_Sales" IS NOT NULL
+    AND "Critic_Score" IS NOT NULL
+    AND TRY_CAST("User_Score" AS DOUBLE) IS NOT NULL`,
+		vegaLiteQuery: `{
+  "width": 800,
+  "height": 300,
+  "mark": {
+    "type": "boxplot",
+    "extent": "min-max"
+  },
+  "encoding": {
+    "y": {
+      "field": "category",
+      "type": "nominal",
+      "title": "Metrics",
+      "sort": ["Global_Sales", "Critic_Score", "User_Score"]
+    },
+    "x": {
+      "field": "value",
+      "type": "quantitative",
+      "title": "Normalized Values (0 - 1)",
+      "scale": {
+        "domain": [0, 1], 
+        "nice": true
+      },
+      "axis": {
+        "tickCount": 5
+      }
+    },
+    "color": {
+      "field": "category",
+      "type": "nominal",
+      "title": "Metric Type"
+    }
+  },
+  "transform": [
+    {
+      "fold": ["Global_Sales", "Critic_Score", "User_Score"],
+      "as": ["category", "value"]
+    },
+    {
+      "filter": "datum.value != null && isFinite(datum.value)"
+    }
+  ],
+  "title": "Horizontal Boxplots of Normalized Global Sales, Critic Score, and User Score (Min-Max Extent)"
+}`,
+	},
+	{
+		name: "boksplot global sales vertical",
+		duckdbQuery: `SELECT
+    'Global Sales' AS category,
+    MIN("Global_Sales") AS min_value,
+    APPROX_QUANTILE("Global_Sales", 0.25) AS q1_value,
+    MEDIAN("Global_Sales") AS median_value,
+    APPROX_QUANTILE("Global_Sales", 0.75) AS q3_value,
+    MAX("Global_Sales") AS max_value
+FROM data
+WHERE "Global_Sales" IS NOT NULL;`,
+		vegaLiteQuery: `{
+  "title": "Boxplot of Global Sales (Log Scale)",
+  "width": 300,
+  "height": 400,
+  "layer": [
+    {
+      "mark": {"type": "rule", "size": 2},
+      "encoding": {
+        "y": {
+          "field": "min_value",
+          "type": "quantitative",
+          "scale": {
+            "type": "log",
+            "base": 10,
+            "zero": false,
+            "nice": true,
+            "padding": 10,
+            "domainMin": 0.1
+          },
+          "title": "Global Sales (in millions)"
+        },
+        "y2": {"field": "max_value"},
+        "x": {
+          "field": "category",
+          "type": "nominal",
+          "title": "Metric",
+          "axis": {
+            "labelAngle": 0,
+            "labelFontSize": 12,
+            "titleFontSize": 14
+          }
+        },
+        "tooltip": [
+          {"field": "min_value", "type": "quantitative", "title": "Minimum"},
+          {"field": "max_value", "type": "quantitative", "title": "Maximum"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "bar", "size": 40},
+      "encoding": {
+        "y": {"field": "q1_value", "type": "quantitative"},
+        "y2": {"field": "q3_value"},
+        "x": {
+          "field": "category",
+          "type": "nominal",
+          "title": "Metric"
+        },
+        "color": {"value": "#4682b4"},
+        "tooltip": [
+          {"field": "q1_value", "type": "quantitative", "title": "Q1"},
+          {"field": "q3_value", "type": "quantitative", "title": "Q3"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "tick",
+        "color": "white",
+        "size": 40
+      },
+      "encoding": {
+        "y": {
+          "field": "median_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "tooltip": [
+          {"field": "median_value", "type": "quantitative", "title": "Median"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 5,
+        "dy": -5,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "min_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "min_value", "type": "quantitative"},
+        "tooltip": [{"field": "min_value", "type": "quantitative", "title": "Minimum"}]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 5,
+        "dy": -5,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "max_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "max_value", "type": "quantitative"},
+        "tooltip": [{"field": "max_value", "type": "quantitative", "title": "Maximum"}]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 20,
+        "dy": 5,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "q1_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "q1_value", "type": "quantitative"},
+        "tooltip": [{"field": "q1_value", "type": "quantitative", "title": "Q1"}]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 20,
+        "dy": -5,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "q3_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "q3_value", "type": "quantitative"},
+        "tooltip": [{"field": "q3_value", "type": "quantitative", "title": "Q3"}]
+      }
+    }
+  ],
+  "config": {
+    "axis": {
+      "grid": true,
+      "tickCount": 4,
+      "gridDash": [5, 5],
+      "gridOpacity": 1
+    }
+  }
+}`,
+	},
+	{
+		name: "Boksplot criticscore and userscore",
+		duckdbQuery: `SELECT 
+    'User Score (Normalized)' AS category,
+    MIN(CAST("User_Score" AS DOUBLE) * 10) AS min_value,
+    APPROX_QUANTILE(CAST("User_Score" AS DOUBLE) * 10, 0.25) AS q1_value,
+    MEDIAN(CAST("User_Score" AS DOUBLE) * 10) AS median_value,
+    APPROX_QUANTILE(CAST("User_Score" AS DOUBLE) * 10, 0.75) AS q3_value,
+    MAX(CAST("User_Score" AS DOUBLE) * 10) AS max_value
+FROM data
+WHERE "User_Score" IS NOT NULL
+  AND TRY_CAST("User_Score" AS DOUBLE) IS NOT NULL
+
+UNION ALL
+
+SELECT 
+    'Critic Score' AS category,
+    MIN(CAST("Critic_Score" AS DOUBLE)) AS min_value,
+    APPROX_QUANTILE(CAST("Critic_Score" AS DOUBLE), 0.25) AS q1_value,
+    MEDIAN(CAST("Critic_Score" AS DOUBLE)) AS median_value,
+    APPROX_QUANTILE(CAST("Critic_Score" AS DOUBLE), 0.75) AS q3_value,
+    MAX(CAST("Critic_Score" AS DOUBLE)) AS max_value
+FROM data
+WHERE "Critic_Score" IS NOT NULL
+  AND TRY_CAST("Critic_Score" AS DOUBLE) IS NOT NULL;`,
+		vegaLiteQuery: `{
+  "title": "Boxplot of User and Critic Scores (Exponential Scale)",
+  "width": 400,
+  "height": 500,
+  "layer": [
+    {
+      "mark": {"type": "rule", "size": 2},
+      "encoding": {
+        "y": {
+          "field": "min_value",
+          "type": "quantitative",
+          "scale": {
+            "type": "pow",
+            "exponent": 2,
+            "zero": false,
+            "nice": true,
+            "padding": 10,
+            "domainMin": 0.1
+          },
+          "title": "Scores"
+        },
+        "y2": {"field": "max_value"},
+        "x": {
+          "field": "category",
+          "type": "nominal",
+          "title": "Metric",
+          "axis": {
+            "labelAngle": 0,
+            "labelFontSize": 12,
+            "titleFontSize": 14
+          }
+        },
+        "tooltip": [
+          {"field": "min_value", "type": "quantitative", "title": "Minimum"},
+          {"field": "max_value", "type": "quantitative", "title": "Maximum"}
+        ]
+      }
+    },
+    {
+      "mark": {"type": "bar", "size": 40},
+      "encoding": {
+        "y": {"field": "q1_value", "type": "quantitative"},
+        "y2": {"field": "q3_value"},
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "color": {"value": "#4682b4"},
+        "tooltip": [
+          {"field": "q1_value", "type": "quantitative", "title": "Q1"},
+          {"field": "q3_value", "type": "quantitative", "title": "Q3"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "tick",
+        "color": "white",
+        "size": 40
+      },
+      "encoding": {
+        "y": {
+          "field": "median_value",
+          "type": "quantitative",
+          "title": null
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "tooltip": [
+          {"field": "median_value", "type": "quantitative", "title": "Median"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "dy": 10,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "min_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "min_value", "type": "quantitative"},
+        "tooltip": [{"field": "min_value", "type": "quantitative", "title": "Minimum"}]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -10,
+        "dy": -10,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "max_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "max_value", "type": "quantitative"},
+        "tooltip": [{"field": "max_value", "type": "quantitative", "title": "Maximum"}]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 20,
+        "dy": 5,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "q1_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "q1_value", "type": "quantitative"},
+        "tooltip": [{"field": "q1_value", "type": "quantitative", "title": "Q1"}]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "dx": -20,
+        "dy": -5,
+        "color": "#000"
+      },
+      "encoding": {
+        "y": {
+          "field": "q3_value",
+          "type": "quantitative"
+        },
+        "x": {
+          "field": "category",
+          "type": "nominal"
+        },
+        "text": {"field": "q3_value", "type": "quantitative"},
+        "tooltip": [{"field": "q3_value", "type": "quantitative", "title": "Q3"}]
+      }
+    }
+  ],
+  "config": {
+    "axis": {
+      "grid": true,
+      "tickCount": 4,
+      "gridDash": [5, 5],
+      "gridOpacity": 1
+    }
+  }
+}`,
 	},
 ];

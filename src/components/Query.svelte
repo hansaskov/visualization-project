@@ -180,7 +180,8 @@
     div:has(table) {
         overflow-x: auto;
         overflow-y: auto;
-        height: 40rem;
+        height: auto;
+        max-height: 40rem;
         -webkit-overflow-scrolling: touch;
     }
 

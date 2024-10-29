@@ -96,7 +96,6 @@
 <div class="codemirror" bind:this={dom}></div>
 
 <style>
-    &.cm-selectionBackground, .cm-selectionBackground { backgroundColor: #3c53ec #074 }
     .codemirror {
         height: 88%;
         margin: 0 auto;
