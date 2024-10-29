@@ -151,15 +151,17 @@ ORDER BY
 		name: "Show null percentage per column",
 		duckdbQuery: "summarize data",
 		vegaLiteQuery: `{
+    "width": 400,
+    "title": "Percentage of null values in dataset by variable",
     "mark": "bar",
     "encoding": {
-        "x": {
+        "y": {
         "field": "column_name",
         "type": "nominal",
-        "sort": "-y",
+        "sort": "-x",
         "title": "Column Name"
         },
-        "y": {
+        "x": {
         "field": "null_percentage",
         "type": "quantitative",
         "title": "Null Percentage",
