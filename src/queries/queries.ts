@@ -651,26 +651,74 @@ ORDER BY total_sales DESC;
     `{
   "width": 400,
   "height": 400,
-  "mark": {"type": "arc", "innerRadius": 0},
+  "mark": {
+    "type": "arc",
+    "innerRadius": 100, 
+    "stroke": "#fff", 
+    "strokeWidth": 2
+  },
   "encoding": {
-    "theta": {
-      "field": "total_sales",
-      "type": "quantitative"
-    },
+    "theta": {"field": "total_sales", "type": "quantitative"},
     "color": {
       "field": "genre_group",
       "type": "nominal",
       "title": "Genre",
-      "scale": {
-        "scheme": "category10"
-      }
+      "scale": {"scheme": "category10"},
+      "legend": {"titleFontSize": 14, "labelFontSize": 12}
     },
     "tooltip": [
       {"field": "genre_group", "type": "nominal", "title": "Genre"},
-      {"field": "total_sales", "type": "quantitative", "title": "Global Sales (millions)", "format": ".2f"}
+      {
+        "field": "total_sales",
+        "type": "quantitative",
+        "title": "Global Sales (millions)",
+        "format": ".2f"
+      }
     ]
   },
-  "title": "Video Game Sales by Genre"
+  "title": {
+    "text": "Global Video Game Sales by Genre (in millions)",
+    "fontSize": 18,
+    "fontWeight": "bold",
+    "anchor": "middle",
+    "color": "#333"
+  },
+  "transform": [
+    {
+      "calculate": "'Genre: ' + datum.genre_group + ', Sales: ' + format(datum.total_sales, '.2f') + 'M'",
+      "as": "label"
+    }
+  ],
+  "encoding": {
+    "theta": {"field": "total_sales", "type": "quantitative"},
+    "color": {
+      "field": "genre_group",
+      "type": "nominal",
+      "title": "Genre",
+      "scale": {"scheme": "category10"}
+    },
+    "tooltip": [
+      {"field": "genre_group", "type": "nominal", "title": "Genre"},
+      {
+        "field": "total_sales",
+        "type": "quantitative",
+        "title": "Global Sales (millions)",
+        "format": ".2f"
+      }
+    ],
+    "text": {"field": "label"}
+  },
+  "mark": {
+    "type": "arc",
+    "innerRadius": 100,
+    "outerRadius": 200,
+    "stroke": "#fff",
+    "strokeWidth": 2
+  },
+  "config": {
+    "view": {"stroke": null},
+    "arc": {"labelRadius": 160, "labelFontSize": 12}
+  }
 }
 `
   }
