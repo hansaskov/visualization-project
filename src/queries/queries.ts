@@ -628,5 +628,50 @@ WHERE "Critic_Score" IS NOT NULL
     }
   }
 }`,
-	},
+	},{
+    name: "Top 5 most popular genres by sales",
+    duckdbQuery: 
+    `SELECT 
+  CASE 
+    WHEN genre IN (
+      SELECT genre 
+      FROM data 
+      GROUP BY genre 
+      ORDER BY SUM(Global_Sales) DESC 
+      LIMIT 5
+    ) THEN genre 
+    ELSE 'Others' 
+  END as genre_group,
+  SUM(Global_Sales) as total_sales
+FROM data
+GROUP BY genre_group
+ORDER BY total_sales DESC;
+    `,
+    vegaLiteQuery: 
+    `{
+  "width": 400,
+  "height": 400,
+  "mark": {"type": "arc", "innerRadius": 0},
+  "encoding": {
+    "theta": {
+      "field": "total_sales",
+      "type": "quantitative"
+    },
+    "color": {
+      "field": "genre_group",
+      "type": "nominal",
+      "title": "Genre",
+      "scale": {
+        "scheme": "category10"
+      }
+    },
+    "tooltip": [
+      {"field": "genre_group", "type": "nominal", "title": "Genre"},
+      {"field": "total_sales", "type": "quantitative", "title": "Global Sales (millions)", "format": ".2f"}
+    ]
+  },
+  "title": "Video Game Sales by Genre"
+}
+`
+  }
 ];
