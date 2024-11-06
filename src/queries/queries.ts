@@ -722,4 +722,64 @@ ORDER BY total_sales DESC;
 }
 `
   }
+	},
+	{
+		name: "Game Sales Heatmap by Genre and Region",
+		duckdbQuery: `SELECT 
+    Genre,
+    SUM(NA_Sales) AS NA_Sales,
+    SUM(EU_Sales) AS EU_Sales,
+    SUM(JP_Sales) AS JP_Sales,
+    SUM(Other_Sales) AS Other_Sales
+FROM 
+data
+GROUP BY 
+    Genre;`,
+		vegaLiteQuery: `{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Game Sales Heatmap by Genre and Region",
+  "width": 300,
+  "height": 300,
+  "mark": "rect",
+  "encoding": {
+    "x": {
+      "field": "Region",
+      "type": "nominal",
+      "axis": {
+        "title": "Region",
+        "labelAngle": -45,
+        "labelFontSize": 12,
+        "labelPadding": 10
+      }
+    },
+    "y": {
+      "field": "Genre",
+      "type": "nominal",
+      "axis": {
+        "title": "Genre",
+        "labelFontSize": 12
+      }
+    },
+    "color": {
+      "field": "Sales",
+      "type": "quantitative",
+      "scale": {
+        "scheme": "blues"
+      },
+      "legend": {
+        "title": "Total Sales (Millions)"
+      }
+    }
+  },
+  "transform": [
+    {
+      "fold": ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"],
+      "as": ["Region", "Sales"]
+    },
+    {
+      "filter": "datum.Genre != null"
+    }
+  ]
+}`,
+	},
 ];
