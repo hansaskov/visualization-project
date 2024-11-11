@@ -79,7 +79,7 @@ LIMIT 10
 `,
 	},
 	{
-		name: "llm bubble chart",
+		name: "Sales over time grouped by genre",
 		duckdbQuery: `SELECT 
     Name AS game_title,
     Year_of_Release AS release_year,
@@ -105,7 +105,7 @@ ORDER BY
       "type": "quantitative",
       "title": "Year of Release",
       "scale": {
-        "domainMin": 1980,
+        "domainMin": 1990,
         "type": "linear"
       },
       "axis": {
