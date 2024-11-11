@@ -721,7 +721,6 @@ ORDER BY total_sales DESC;
   }
 }
 `
-  }
 	},
 	{
 		name: "Game Sales Heatmap by Genre and Region",
