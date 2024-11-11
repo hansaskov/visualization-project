@@ -45,14 +45,14 @@ LIMIT 10`,
 `,
 	},
 	{
-		name: "Critic Score by Platform",
+		name: "Top 10 platforms by Critic Score",
 		duckdbQuery: `SELECT Platform, AVG(Critic_Score) AS avg_critic_score, CAST(COUNT(*) AS INT) AS game_count
 FROM data
 WHERE Critic_Score IS NOT NULL
 GROUP BY Platform
 HAVING COUNT(*) > 10
 ORDER BY avg_critic_score DESC
-LIMIT 15
+LIMIT 10
 `,
 		vegaLiteQuery: `{
   "mark": "circle",
@@ -198,7 +198,8 @@ FROM data
 ORDER BY column_name;`,
 		vegaLiteQuery: ``,
 	},
-	{
+	/*
+  {
 		name: "boksplot 3 in 1 normalized horizontal",
 		duckdbQuery: `SELECT 
     ("Global_Sales" - MIN("Global_Sales") OVER ()) / (MAX("Global_Sales") OVER () - MIN("Global_Sales") OVER ()) AS Global_Sales,
@@ -253,6 +254,7 @@ WHERE
   "title": "Horizontal Boxplots of Normalized Global Sales, Critic Score, and User Score (Min-Max Extent)"
 }`,
 	},
+  */
 	{
 		name: "boksplot global sales vertical",
 		duckdbQuery: `SELECT
