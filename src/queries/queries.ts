@@ -902,6 +902,124 @@ ORDER BY release_year ASC;`,
       }
     ]
   }`
+},
+{
+  name: "Critics vs user score compared by genre over time", 
+  duckdbQuery: `SELECT 
+      Year_of_Release as year,
+      Genre as genre,
+      AVG(User_Score) as avg_user_score,
+      AVG(Critic_Score) / 10 as avg_critic_score,
+      CAST(COUNT(*) AS INTEGER) as num_releases
+  FROM data
+  WHERE Year_of_Release IS NOT NULL 
+      AND User_Score IS NOT NULL 
+      AND Critic_Score IS NOT NULL
+  GROUP BY Year_of_Release, Genre`,
+
+  vegaLiteQuery: `{
+  "title": "Genre Performance by User and Critic Scores",
+  "width": 600,
+  "height": 400,
+  "params": [
+    {
+      "name": "year_slider",
+      "value": 2006,
+      "bind": {
+        "input": "range",
+        "min": 1996,
+        "max": 2016,
+        "step": 1,
+        "name": "Year: "
+      }
+    }
+  ],
+  "data": {"name": "data"},
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "color": "gray",
+        "opacity": 0.5,
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {"datum": 0},
+        "y": {"datum": 0},
+        "x2": {"datum": 10},
+        "y2": {"datum": 10}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "right",
+        "baseline": "top",
+        "dx": -5,
+        "dy": 5,
+        "fontSize": 11,
+        "fontStyle": "italic"
+      },
+      "encoding": {
+        "x": {"datum": 10},
+        "y": {"datum": 10},
+        "text": {"value": "User / Critic Agreement Line"}
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "opacity": 0.8
+      },
+      "encoding": {
+        "x": {
+          "field": "avg_critic_score",
+          "type": "quantitative",
+          "title": "Average Critic Score",
+          "scale": {"domain": [0, 10]}
+        },
+        "y": {
+          "field": "avg_user_score",
+          "type": "quantitative",
+          "title": "Average User Score",
+          "scale": {"domain": [0, 10]}
+        },
+        "size": {
+          "field": "num_releases",
+          "type": "quantitative",
+          "title": "Number of Releases",
+          "scale": {
+            "range": [100, 3000]
+          }
+        },
+        "color": {
+          "field": "genre",
+          "type": "nominal",
+          "title": "Genre",
+          "scale": {"scheme": "category10"}
+        },
+        "tooltip": [
+          {"field": "genre", "type": "nominal", "title": "Genre"},
+          {"field": "avg_critic_score", "type": "quantitative", "format": ".1f", "title": "Critic Score"},
+          {"field": "avg_user_score", "type": "quantitative", "format": ".1f", "title": "User Score"},
+          {"field": "num_releases", "type": "quantitative", "title": "Number of Games"}
+        ]
+      },
+      "selection": {
+        "genre_selection": {"type": "multi", "fields": ["genre"], "bind": "legend"}
+      },
+      "opacity": {
+        "condition": {"selection": "genre_selection", "value": 1},
+        "value": 0.2
+      }
+    }
+  ],
+  "transform": [
+    {
+      "filter": "datum.year == year_slider"
+    }
+  ]
+}`
 }
 
 ];
