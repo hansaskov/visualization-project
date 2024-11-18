@@ -859,25 +859,20 @@ ORDER BY release_year ASC;`,
     "width": 800,
     "height": 600,
     "mark": "area",
-    "params": [{
-      "name": "platform_selection",
-      "select": {"type": "point", "fields": ["platform"]},
-      "bind": "legend"
-    }],
+    "params": [
+      {
+        "name": "platform_selection",
+        "select": {"type": "point", "fields": ["platform"]},
+        "bind": "legend"
+      }
+    ],
     "encoding": {
       "x": {
         "field": "release_year",
         "type": "quantitative",
         "title": "Year of Release",
-        "scale": {
-          "domainMin": 1996,
-          "type": "linear"
-        },
-        "axis": {
-          "format": "d",
-          "domain": false,
-          "tickSize": 0
-        }
+        "scale": {"domainMin": 1996, "type": "linear"},
+        "axis": {"format": "d", "domain": false, "tickSize": 0}
       },
       "y": {
         "field": "market_share_percentage",
@@ -889,18 +884,29 @@ ORDER BY release_year ASC;`,
         "field": "platform",
         "type": "nominal",
         "title": "Platform",
-        "scale": {"scheme": "category20b"}
+        "scale": {
+          "domain": [
+            "PS", "PS2", "PS3", "PS4", "PSP", "PSV",
+            "XB", "X360", "XOne",
+            "GC", "Wii", "WiiU", "DS", "3DS", "GBA",
+            "PC",
+            "DC"
+          ],
+          "range": [
+            "#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#4c4f9c", "#8587c4",
+            "#31a354", "#74c476", "#a1d99b",
+            "#843c39", "#ad494a", "#d6616b", "#e7969c", "#7b4173", "#a55194",
+            "#404040",
+            "#ce6dbd"
+          ]
+        }
       },
       "opacity": {
         "condition": {"param": "platform_selection", "value": 1},
         "value": 0.2
       }
     },
-    "transform": [
-      {
-        "filter": "datum.market_share_percentage > 0"
-      }
-    ]
+    "transform": [{"filter": "datum.market_share_percentage > 0"}]
   }`
 },
 {
@@ -915,106 +921,111 @@ ORDER BY release_year ASC;`,
   GROUP BY Year_of_Release, Genre`,
 
   vegaLiteQuery: `{
-  "title": "Genre Performance by User and Critic Scores",
-  "width": 600,
-  "height": 400,
-  "params": [
-    {
-      "name": "year_slider",
-      "value": 2006,
-      "bind": {
-        "input": "range",
-        "min": 1996,
-        "max": 2016,
-        "step": 1,
-        "name": "Year: "
+    "title": "Genre Performance by User and Critic Scores",
+    "width": 600,
+    "height": 400,
+    "params": [
+      {
+        "name": "year_slider",
+        "value": 2006,
+        "bind": {
+          "input": "range",
+          "min": 1996,
+          "max": 2016,
+          "step": 1,
+          "name": "Year: "
+        }
       }
-    }
-  ],
-  "data": {"name": "data"},
-  "layer": [
-    {
-      "mark": {
-        "type": "line",
-        "color": "gray",
-        "opacity": 0.5,
-        "strokeWidth": 2
+    ],
+    "layer": [
+      {
+        "mark": {
+          "type": "line",
+          "color": "gray",
+          "opacity": 1,
+          "strokeWidth": 2
+        },
+        "encoding": {
+          "x": {"datum": -1000},
+          "y": {"datum": -1000},
+          "x2": {"datum": 1000},
+          "y2": {"datum": 1000}
+        }
       },
-      "encoding": {
-        "x": {"datum": 0},
-        "y": {"datum": 0},
-        "x2": {"datum": 10},
-        "y2": {"datum": 10}
+      {
+        "mark": {
+          "type": "text",
+          "align": "right",
+          "baseline": "top",
+          "dx": -5,
+          "dy": 5,
+          "fontSize": 11,
+          "fontStyle": "italic"
+        },
+        "encoding": {
+          "x": {"datum": 10},
+          "y": {"datum": 10},
+          "text": {"value": "User / Critic Agreement Line"}
+        }
+      },
+      {
+        "mark": {"type": "circle", "opacity": 0.8},
+        "encoding": {
+          "x": {
+            "field": "avg_critic_score",
+            "type": "quantitative",
+            "title": "Average Critic Score",
+            "scale": {"domain": [0, 10]}
+          },
+          "y": {
+            "field": "avg_user_score",
+            "type": "quantitative",
+            "title": "Average User Score",
+            "scale": {"domain": [0, 10]}
+          },
+          "size": {
+            "field": "num_releases",
+            "type": "quantitative",
+            "title": "Number of Releases",
+            "scale": {"domain": [0, 50]}
+          },
+          "color": {
+            "field": "genre",
+            "type": "nominal",
+            "title": "Genre",
+            "scale": {"scheme": "category10"}
+          },
+          "tooltip": [
+            {"field": "genre", "type": "nominal", "title": "Genre"},
+            {
+              "field": "avg_critic_score",
+              "type": "quantitative",
+              "format": ".1f",
+              "title": "Critic Score"
+            },
+            {
+              "field": "avg_user_score",
+              "type": "quantitative",
+              "format": ".1f",
+              "title": "User Score"
+            },
+            {
+              "field": "num_releases",
+              "type": "quantitative",
+              "title": "Number of Games"
+            }
+          ]
+        },
+        "selection": {
+          "grid": {
+            "type": "interval",
+            "bind": "scales"
+          }
+        }
       }
-    },
-    {
-      "mark": {
-        "type": "text",
-        "align": "right",
-        "baseline": "top",
-        "dx": -5,
-        "dy": 5,
-        "fontSize": 11,
-        "fontStyle": "italic"
-      },
-      "encoding": {
-        "x": {"datum": 10},
-        "y": {"datum": 10},
-        "text": {"value": "User / Critic Agreement Line"}
-      }
-    },
-    {
-      "mark": {
-        "type": "circle",
-        "opacity": 0.8
-      },
-      "encoding": {
-        "x": {
-          "field": "avg_critic_score",
-          "type": "quantitative",
-          "title": "Average Critic Score",
-          "scale": {"domain": [0, 10]}
-        },
-        "y": {
-          "field": "avg_user_score",
-          "type": "quantitative",
-          "title": "Average User Score",
-          "scale": {"domain": [0, 10]}
-        },
-        "size": {
-          "field": "num_releases",
-          "type": "quantitative",
-          "title": "Number of Releases",
-          "scale": {"domain": [0, 50]}
-        },
-        "color": {
-          "field": "genre",
-          "type": "nominal",
-          "title": "Genre",
-          "scale": {"scheme": "category10"}
-        },
-        "tooltip": [
-          {"field": "genre", "type": "nominal", "title": "Genre"},
-          {"field": "avg_critic_score", "type": "quantitative", "format": ".1f", "title": "Critic Score"},
-          {"field": "avg_user_score", "type": "quantitative", "format": ".1f", "title": "User Score"},
-          {"field": "num_releases", "type": "quantitative", "title": "Number of Games"}
-        ]
-      },
-      "selection": {
-        "genre_selection": {"type": "multi", "fields": ["genre"], "bind": "legend"}
-      },
-      "opacity": {
-        "condition": {"selection": "genre_selection", "value": 1},
-        "value": 0.2
-      }
-    }
-  ],
-  "transform": [
-    {
-      "filter": "datum.year == year_slider"
-    }
-  ]
-}`
+    ],
+    "transform": [{"filter": "datum.year == year_slider"}]
+  }`
 }
 
 ];
