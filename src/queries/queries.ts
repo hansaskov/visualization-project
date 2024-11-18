@@ -912,9 +912,6 @@ ORDER BY release_year ASC;`,
       AVG(Critic_Score) / 10 as avg_critic_score,
       CAST(COUNT(*) AS INTEGER) as num_releases
   FROM data
-  WHERE Year_of_Release IS NOT NULL 
-      AND User_Score IS NOT NULL 
-      AND Critic_Score IS NOT NULL
   GROUP BY Year_of_Release, Genre`,
 
   vegaLiteQuery: `{
@@ -988,9 +985,7 @@ ORDER BY release_year ASC;`,
           "field": "num_releases",
           "type": "quantitative",
           "title": "Number of Releases",
-          "scale": {
-            "range": [100, 3000]
-          }
+          "scale": {"domain": [0, 50]}
         },
         "color": {
           "field": "genre",
