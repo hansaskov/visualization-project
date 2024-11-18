@@ -79,7 +79,7 @@ LIMIT 10
 `,
 	},
 	{
-		name: "Sales over time grouped by genre",
+		name: "Sales over time grouped by genre (AI)",
 		duckdbQuery: `SELECT 
     Name AS game_title,
     Year_of_Release AS release_year,
@@ -147,114 +147,6 @@ ORDER BY
   ]
 }`,
 	},
-	{
-		name: "Show null percentage per column",
-		duckdbQuery: "summarize data",
-		vegaLiteQuery: `{
-    "width": 400,
-    "title": "Percentage of null values in dataset by variable",
-    "mark": "bar",
-    "encoding": {
-        "y": {
-        "field": "column_name",
-        "type": "nominal",
-        "sort": "-x",
-        "title": "Column Name"
-        },
-        "x": {
-        "field": "null_percentage",
-        "type": "quantitative",
-        "title": "Null Percentage",
-        "axis": {
-            "format": ".1f"
-        }
-        }
-    },
-    "transform": [
-        {
-        "calculate": "parseFloat(replace(datum.null_percentage, '%', ''))",
-        "as": "null_percentage"
-        }
-    ]
-    }
-        `,
-	},
-	{
-		name: "Unique values in columns",
-		duckdbQuery: `SELECT 'Genre' as column_name, COUNT(DISTINCT Genre) as unique_count
-FROM data
-UNION ALL
-SELECT 'Platform', COUNT(DISTINCT Platform)
-FROM data
-UNION ALL
-SELECT 'Publisher', COUNT(DISTINCT Publisher)
-FROM data
-UNION ALL
-SELECT 'Developer', COUNT(DISTINCT Developer)
-FROM data
-UNION ALL
-SELECT 'Rating', COUNT(DISTINCT Rating)
-FROM data
-ORDER BY column_name;`,
-		vegaLiteQuery: ``,
-	},
-	/*
-  {
-		name: "boksplot 3 in 1 normalized horizontal",
-		duckdbQuery: `SELECT 
-    ("Global_Sales" - MIN("Global_Sales") OVER ()) / (MAX("Global_Sales") OVER () - MIN("Global_Sales") OVER ()) AS Global_Sales,
-    ("Critic_Score" - MIN("Critic_Score") OVER ()) / (MAX("Critic_Score") OVER () - MIN("Critic_Score") OVER ()) AS Critic_Score,
-    (CAST("User_Score" AS DOUBLE) - MIN(CAST("User_Score" AS DOUBLE)) OVER ()) / (MAX(CAST("User_Score" AS DOUBLE)) OVER () - MIN(CAST("User_Score" AS DOUBLE)) OVER ()) AS User_Score
-FROM data
-WHERE 
-    "Global_Sales" IS NOT NULL
-    AND "Critic_Score" IS NOT NULL
-    AND TRY_CAST("User_Score" AS DOUBLE) IS NOT NULL`,
-		vegaLiteQuery: `{
-  "width": 800,
-  "height": 300,
-  "mark": {
-    "type": "boxplot",
-    "extent": "min-max"
-  },
-  "encoding": {
-    "y": {
-      "field": "category",
-      "type": "nominal",
-      "title": "Metrics",
-      "sort": ["Global_Sales", "Critic_Score", "User_Score"]
-    },
-    "x": {
-      "field": "value",
-      "type": "quantitative",
-      "title": "Normalized Values (0 - 1)",
-      "scale": {
-        "domain": [0, 1], 
-        "nice": true
-      },
-      "axis": {
-        "tickCount": 5
-      }
-    },
-    "color": {
-      "field": "category",
-      "type": "nominal",
-      "title": "Metric Type"
-    }
-  },
-  "transform": [
-    {
-      "fold": ["Global_Sales", "Critic_Score", "User_Score"],
-      "as": ["category", "value"]
-    },
-    {
-      "filter": "datum.value != null && isFinite(datum.value)"
-    }
-  ],
-  "title": "Horizontal Boxplots of Normalized Global Sales, Critic Score, and User Score (Min-Max Extent)"
-}`,
-	},
-  */
 	{
 		name: "boksplot global sales vertical",
 		duckdbQuery: `SELECT
@@ -462,7 +354,7 @@ FROM data
 WHERE "Critic_Score" IS NOT NULL
   AND TRY_CAST("Critic_Score" AS DOUBLE) IS NOT NULL;`,
 		vegaLiteQuery: `{
-  "title": "Boxplot of User and Critic Scores (Exponential Scale)",
+  "title": "Boxplot of User and Critic Scores",
   "width": 400,
   "height": 500,
   "layer": [
@@ -473,8 +365,6 @@ WHERE "Critic_Score" IS NOT NULL
           "field": "min_value",
           "type": "quantitative",
           "scale": {
-            "type": "pow",
-            "exponent": 2,
             "zero": false,
             "nice": true,
             "padding": 10,
