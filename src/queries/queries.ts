@@ -614,6 +614,78 @@ ORDER BY total_sales DESC;
 }
 `
 	},
+  {
+    name: "7. Pie chart of total Games sold by region ",
+    duckdbQuery:
+    `SELECT 
+    'North America' as region,
+    SUM(NA_Sales) as sales
+FROM data
+UNION ALL
+SELECT 
+    'Europe' as region,
+    SUM(EU_Sales) as sales
+FROM data
+UNION ALL
+SELECT 
+    'Japan' as region,
+    SUM(JP_Sales) as sales
+FROM data
+UNION ALL
+SELECT 
+    'Other Regions' as region,
+    SUM(Other_Sales) as sales
+FROM data
+ORDER BY sales DESC;`,
+    vegaLiteQuery:
+    `{
+  "width": 400,
+  "height": 400,
+  "mark": {
+    "type": "arc",
+    "innerRadius": 100,
+    "outerRadius": 200,
+    "stroke": "#fff",
+    "strokeWidth": 2
+  },
+  "encoding": {
+    "theta": {"field": "sales", "type": "quantitative"},
+    "color": {
+      "field": "region",
+      "type": "nominal",
+      "title": "Region",
+      "scale": {"scheme": "category10"},
+      "legend": {"titleFontSize": 14, "labelFontSize": 12}
+    },
+    "tooltip": [
+      {"field": "region", "type": "nominal", "title": "Region"},
+      {
+        "field": "sales",
+        "type": "quantitative",
+        "title": "Sales (millions)",
+        "format": ".2f"
+      }
+    ]
+  },
+  "title": {
+    "text": "Video Game Sales Distribution by Region",
+    "fontSize": 18,
+    "fontWeight": "bold",
+    "anchor": "middle",
+    "color": "#333"
+  },
+  "transform": [
+    {
+      "calculate": "'Region: ' + datum.region + ', Sales: ' + format(datum.sales, '.2f') + 'M'",
+      "as": "label"
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "arc": {"labelRadius": 160, "labelFontSize": 12}
+  }
+}`
+},
 	{
 		name: "Game Sales Heatmap by Genre and Region",
 		duckdbQuery: `SELECT 
@@ -733,6 +805,84 @@ ORDER BY release_year ASC;`,
       ]
     }`
 },
+{
+  "name": "9. Which genres sells the best on different platforms",
+  "duckdbQuery": `
+    WITH platform_totals AS (
+      SELECT 
+        Platform,
+        SUM(Global_Sales) as platform_total_sales
+      FROM data
+      GROUP BY Platform
+    )
+    SELECT 
+      d.Platform,
+      d.Genre,
+      SUM(d.Global_Sales) as total_sales,
+      (SUM(d.Global_Sales) / pt.platform_total_sales * 100) as percentage_of_platform
+    FROM data d
+    JOIN platform_totals pt ON d.Platform = pt.Platform
+    GROUP BY d.Platform, d.Genre, pt.platform_total_sales
+    ORDER BY d.Platform, percentage_of_platform DESC;
+  `,
+  "vegaLiteQuery": `{
+    "width": 700,
+    "height": 500,
+    "title": {
+      "text": "Genre Distribution by Platform (% of Platform Sales)",
+      "fontSize": 20,
+      "fontWeight": "bold"
+    },
+    "mark": "rect",
+    "encoding": {
+      "x": {
+        "field": "Platform",
+        "type": "nominal",
+        "axis": {
+          "labelAngle": -45,
+          "title": "Platform"
+        }
+      },
+      "y": {
+        "field": "Genre",
+        "type": "nominal",
+        "title": "Genre",
+        "sort": "-x"
+      },
+      "color": {
+        "field": "percentage_of_platform",
+        "type": "quantitative",
+        "title": "% of Platform Sales",
+        "scale": {
+          "scheme": "viridis",
+          "domain": [0, 50]
+        }
+      },
+      "tooltip": [
+        {"field": "Platform", "type": "nominal"},
+        {"field": "Genre", "type": "nominal"},
+        {
+          "field": "percentage_of_platform",
+          "type": "quantitative",
+          "title": "% of Platform Sales",
+          "format": ".1f"
+        },
+        {
+          "field": "total_sales",
+          "type": "quantitative",
+          "title": "Total Sales (millions)",
+          "format": ".2f"
+        }
+      ]
+    },
+    "config": {
+      "view": {
+        "stroke": "transparent"
+      }
+    }
+  }`
+},
+
 {
   name: "Sales percentage over time grouped by platform",
   duckdbQuery: `SELECT
