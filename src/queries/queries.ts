@@ -809,21 +809,31 @@ ORDER BY release_year ASC;`,
   "name": "9. Which genres sells the best on different platforms",
   "duckdbQuery": `
     WITH platform_totals AS (
-      SELECT 
+      SELECT
         Platform,
         SUM(Global_Sales) as platform_total_sales
       FROM data
       GROUP BY Platform
+    ),
+    genre_totals AS (
+      SELECT 
+        Genre,
+        SUM(Global_Sales) as total_genre_sales
+      FROM data
+      GROUP BY Genre
+      ORDER BY total_genre_sales DESC
     )
-    SELECT 
+    SELECT
       d.Platform,
       d.Genre,
       SUM(d.Global_Sales) as total_sales,
-      (SUM(d.Global_Sales) / pt.platform_total_sales * 100) as percentage_of_platform
+      (SUM(d.Global_Sales) / pt.platform_total_sales * 100) as percentage_of_platform,
+      gt.total_genre_sales
     FROM data d
     JOIN platform_totals pt ON d.Platform = pt.Platform
-    GROUP BY d.Platform, d.Genre, pt.platform_total_sales
-    ORDER BY d.Platform, percentage_of_platform DESC;
+    JOIN genre_totals gt ON d.Genre = gt.Genre
+    GROUP BY d.Platform, d.Genre, pt.platform_total_sales, gt.total_genre_sales
+    ORDER BY gt.total_genre_sales DESC, d.Platform, percentage_of_platform DESC;
   `,
   "vegaLiteQuery": `{
     "width": 700,
@@ -841,13 +851,21 @@ ORDER BY release_year ASC;`,
         "axis": {
           "labelAngle": -45,
           "title": "Platform"
-        }
+        },
+        "sort": [
+          "NES", "SNES", "N64", "GC", "Wii", "WiiU",  
+          "GB", "GBA", "DS", "3DS",
+          "PS", "PS2", "PS3", "PS4", "PSP", "PSV",
+          "XB", "X360", "XOne",
+          "PC",
+          "2600", "GEN", "DC", "SAT", "NG", "TG16", "3DO", "WS", "SCD", "PCFX"
+        ]
       },
       "y": {
         "field": "Genre",
         "type": "nominal",
         "title": "Genre",
-        "sort": "-x"
+        "sort": {"field": "total_genre_sales", "order": "descending"}
       },
       "color": {
         "field": "percentage_of_platform",
@@ -872,6 +890,12 @@ ORDER BY release_year ASC;`,
           "type": "quantitative",
           "title": "Total Sales (millions)",
           "format": ".2f"
+        },
+        {
+          "field": "total_genre_sales",
+          "type": "quantitative",
+          "title": "Total Genre Sales (millions)",
+          "format": ".2f"
         }
       ]
     },
@@ -882,7 +906,6 @@ ORDER BY release_year ASC;`,
     }
   }`
 },
-
 {
   name: "Sales percentage over time grouped by platform",
   duckdbQuery: `SELECT
