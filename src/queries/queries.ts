@@ -44,6 +44,7 @@ LIMIT 10`,
 }
 `,
 	},
+  
 	{
 		name: "Top 10 platforms by Critic Score",
 		duckdbQuery: `SELECT Platform, AVG(Critic_Score) AS avg_critic_score, CAST(COUNT(*) AS INT) AS game_count
@@ -838,10 +839,16 @@ ORDER BY release_year ASC;`,
   "vegaLiteQuery": `{
     "width": 700,
     "height": 500,
+    "padding": {"top": 30, "bottom": 10, "left": 10, "right": 10},
     "title": {
-      "text": "Genre Distribution by Platform (% of Platform Sales)",
+      "text": "Video Game Genre Dominance Across Gaming Platforms",
+      "subtitle": "Action games lead across most platforms, while Platform and Shooter games show platform-specific popularity",
       "fontSize": 20,
-      "fontWeight": "bold"
+      "fontWeight": "bold",
+      "subtitleFontSize": 14,
+      "subtitleColor": "#666666",
+      "offset": 20,
+      "subtitlePadding": 15
     },
     "mark": "rect",
     "encoding": {
@@ -905,7 +912,7 @@ ORDER BY release_year ASC;`,
       }
     }
   }`
-},
+},  
 {
   name: "Sales percentage over time grouped by platform",
   duckdbQuery: `SELECT
