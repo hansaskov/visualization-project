@@ -817,12 +817,22 @@ ORDER BY release_year ASC;`,
           "field": "genre",
           "type": "nominal",
           "title": "Genre",
-          "scale": {"scheme": "category20b"}
+          "scale": {"scheme": "tealblues"}
         },
         "opacity": {
           "condition": {"param": "genre_selection", "value": 1},
           "value": 0.2
-        }
+        },
+        "tooltip": [
+          {"field": "genre", "type": "nominal", "title": "Genre"},
+          {
+            "field": "market_share_percentage",
+            "type": "quantitative",
+            "format": ".1f",
+            "title": "Market Share (%)"
+          },
+          {"field":"release_year", "type":"quantitative", "title": "Year"}
+        ]
       },
       "transform": [
         {
@@ -980,7 +990,7 @@ ORDER BY release_year ASC;`,
         "type": "nominal",
         "title": "Platform",
         "scale": {
-		"domain": [
+		      "domain": [
           		"PS", "PS2", "PS3", "PS4",
           		"PSP", "PSV",
           		"XB", "X360", "XOne",
@@ -1003,7 +1013,17 @@ ORDER BY release_year ASC;`,
       "opacity": {
         "condition": {"param": "platform_selection", "value": 1},
         "value": 0.2
-      }
+      },
+      "tooltip": [
+        {"field": "platform", "type": "nominal", "title": "Platform"},
+        {
+          "field": "market_share_percentage",
+          "type": "quantitative",
+          "format": ".1f",
+          "title": "Market Share (%)"
+        },
+        {"field":"release_year", "type":"quantitative", "title": "Year"}
+      ]
     },
     "transform": [{"filter": "datum.market_share_percentage > 0"}]
   }`
