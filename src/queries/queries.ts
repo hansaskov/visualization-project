@@ -905,7 +905,7 @@ ORDER BY release_year ASC;`,
         "title": "% of Platform Sales",
         "scale": {
           "scheme": "viridis",
-          "domain": [0, 50]
+          "domain": [0, 40]
         }
       },
       "tooltip": [
