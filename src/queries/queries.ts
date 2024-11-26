@@ -687,65 +687,83 @@ ORDER BY sales DESC;`,
   }
 }`
 },
-	{
-		name: "Game Sales Heatmap by Genre and Region",
-		duckdbQuery: `SELECT 
-    Genre,
-    SUM(NA_Sales) AS NA_Sales,
-    SUM(EU_Sales) AS EU_Sales,
-    SUM(JP_Sales) AS JP_Sales,
-    SUM(Other_Sales) AS Other_Sales
-FROM 
-data
-GROUP BY 
-    Genre;`,
-		vegaLiteQuery: `{
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Game Sales Heatmap by Genre and Region",
-  "width": 300,
-  "height": 300,
-  "mark": "rect",
-  "encoding": {
-    "x": {
-      "field": "Region",
-      "type": "nominal",
-      "axis": {
-        "title": "Region",
-        "labelAngle": -45,
-        "labelFontSize": 12,
-        "labelPadding": 10
-      }
+{
+  name: "Game Sales Heatmap by Genre and Region",
+  duckdbQuery: `WITH TotalSalesByRegion AS (
+  SELECT
+      SUM(NA_Sales) AS Total_NA_Sales,
+      SUM(EU_Sales) AS Total_EU_Sales,
+      SUM(JP_Sales) AS Total_JP_Sales,
+      SUM(Other_Sales) AS Total_Other_Sales
+  FROM data
+),
+NormalizedSales AS (
+  SELECT
+      Genre,
+      ROUND(SUM(NA_Sales) * 100.0 / (SELECT Total_NA_Sales FROM TotalSalesByRegion), 2) AS NA_Percentage,
+      ROUND(SUM(EU_Sales) * 100.0 / (SELECT Total_EU_Sales FROM TotalSalesByRegion), 2) AS EU_Percentage,
+      ROUND(SUM(JP_Sales) * 100.0 / (SELECT Total_JP_Sales FROM TotalSalesByRegion), 2) AS JP_Percentage,
+      ROUND(SUM(Other_Sales) * 100.0 / (SELECT Total_Other_Sales FROM TotalSalesByRegion), 2) AS Other_Percentage
+  FROM
+      data
+  GROUP BY
+      Genre
+)
+SELECT * FROM NormalizedSales;`,
+  vegaLiteQuery: `{
+"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+"description": "Game Sales Heatmap by Genre and Region (Region-wise Percentages)",
+"width": 350,
+"height": 350,
+"mark": {
+  "type": "rect",
+  "stroke": "white",
+  "strokeWidth": 4
+},
+"encoding": {
+  "x": {
+    "field": "Region",
+    "type": "nominal",
+    "axis": {
+      "title": "Region",
+      "labelAngle": -45,
+      "labelFontSize": 12,
+      "labelPadding": 10
     },
-    "y": {
-      "field": "Genre",
-      "type": "nominal",
-      "axis": {
-        "title": "Genre",
-        "labelFontSize": 12
-      }
-    },
-    "color": {
-      "field": "Sales",
-      "type": "quantitative",
-      "scale": {
-        "scheme": "blues"
-      },
-      "legend": {
-        "title": "Total Sales (Millions)"
-      }
+    "spacing": 10
+  },
+  "y": {
+    "field": "Genre",
+    "type": "nominal",
+    "axis": {
+      "title": "Genre",
+      "labelFontSize": 12
     }
   },
-  "transform": [
-    {
-      "fold": ["NA_Sales", "EU_Sales", "JP_Sales", "Other_Sales"],
-      "as": ["Region", "Sales"]
+  "color": {
+    "field": "Sales",
+    "type": "quantitative",
+    "scale": {
+      "scheme": "viridis"
     },
-    {
-      "filter": "datum.Genre != null"
+    "legend": {
+      "title": "Regional Sales (%)",
+      "labelFontSize": 12,
+      "titleFontSize": 14
     }
-  ]
+  }
+},
+"transform": [
+  {
+    "fold": ["NA_Percentage", "EU_Percentage", "JP_Percentage", "Other_Percentage"],
+    "as": ["Region", "Sales"]
+  },
+  {
+    "filter": "datum.Genre != null"
+  }
+]
 }`,
-	},
+},
   {
     name: "Sales percentage over time grouped by genre",
     duckdbQuery: `SELECT 
