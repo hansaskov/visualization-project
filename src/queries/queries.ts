@@ -980,26 +980,40 @@ ORDER BY release_year ASC;`,
         "type": "nominal",
         "title": "Platform",
         "scale": {
-          "domain": [
-            "PS", "PS2", "PS3", "PS4", "PSP", "PSV",
-            "XB", "X360", "XOne",
-            "GC", "Wii", "WiiU", "DS", "3DS", "GBA",
-            "PC",
-            "DC"
-          ],
-          "range": [
-            "#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#4c4f9c", "#8587c4",
-            "#31a354", "#74c476", "#a1d99b",
-            "#843c39", "#ad494a", "#d6616b", "#e7969c", "#7b4173", "#a55194",
-            "#404040",
-            "#e5f609"
-          ]
+		"domain": [
+          		"PS", "PS2", "PS3", "PS4",
+          		"PSP", "PSV",
+          		"XB", "X360", "XOne",
+          		"GC", "Wii", "WiiU",
+          		"GBA", "DS", "3DS", 
+          		"PC",
+          		"DC"
+        	],
+        	"range": [
+          		"#234565", "#2b567d", "#336696", "#3a76ae",
+          		"#4cc5c5", "#63cdce",
+          		"#2f551e", "#3c6d26", "#48852e",
+          		"#b280d5", "#c197de", "#cfafe6",
+          		"#c96160", "#d27877", "#da908f",
+          		"#404040",
+          		"#cfae44"
+        	]
         }
       },
       "opacity": {
         "condition": {"param": "platform_selection", "value": 1},
         "value": 0.2
-      }
+      },
+      "tooltip": [
+          {"field": "platform", "type": "nominal", "title": "Platform"},
+          {
+            "field": "market_share_percentage",
+            "type": "quantitative",
+            "format": ".1f",
+            "title": "Market Share (%)"
+          },
+          {"field":"release_year", "type":"quantitative", "title": "Year"},
+        ]
     },
     "transform": [{"filter": "datum.market_share_percentage > 0"}]
   }`
