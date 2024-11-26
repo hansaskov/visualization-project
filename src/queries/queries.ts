@@ -156,11 +156,14 @@ ORDER BY
     APPROX_QUANTILE("Global_Sales", 0.25) AS q1_value,
     MEDIAN("Global_Sales") AS median_value,
     APPROX_QUANTILE("Global_Sales", 0.75) AS q3_value,
-    MAX("Global_Sales") AS max_value
+    1 AS max_value
 FROM data
 WHERE "Global_Sales" IS NOT NULL;`,
 		vegaLiteQuery: `{
-  "title": "Boxplot of Global Sales (Log Scale)",
+  "title": {
+    "text": "Boxplot of Global Sales",
+    "subtitle": ["Max Value is missing do to extreme difference.", "Max global sales was Wii Sports with 82.53 million", "", "The 1 indicates that the max lies above 1"]
+  },
   "width": 300,
   "height": 400,
   "layer": [
@@ -171,8 +174,6 @@ WHERE "Global_Sales" IS NOT NULL;`,
           "field": "min_value",
           "type": "quantitative",
           "scale": {
-            "type": "log",
-            "base": 10,
             "zero": false,
             "nice": true,
             "padding": 10,
@@ -272,7 +273,7 @@ WHERE "Global_Sales" IS NOT NULL;`,
           "field": "category",
           "type": "nominal"
         },
-        "text": {"field": "max_value", "type": "quantitative"},
+        "text": {"field": "max_value", "type": "norminal", "value": "< 1"},
         "tooltip": [{"field": "max_value", "type": "quantitative", "title": "Maximum"}]
       }
     },
@@ -713,6 +714,7 @@ SELECT * FROM NormalizedSales;`,
   vegaLiteQuery: `{
 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 "description": "Game Sales Heatmap by Genre and Region (Region-wise Percentages)",
+"title": "Game Sales Heatmap by Genre and Region",
 "width": 350,
 "height": 350,
 "mark": {
@@ -751,7 +753,12 @@ SELECT * FROM NormalizedSales;`,
       "labelFontSize": 12,
       "titleFontSize": 14
     }
-  }
+  },
+  "tooltip": [
+      {"field": "Region", "type": "nominal", "title": "Region"},
+      {"field": "Genre", "type": "nominal", "title": "Genre"},
+      {"field": "Sales", "type": "quantitative", "title": "Sales (%)"}
+    ]
 },
 "transform": [
   {
