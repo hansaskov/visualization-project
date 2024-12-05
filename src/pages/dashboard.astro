@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Dashboard from '../components/Dashboard.svelte';
+---
+
+<Layout title="Dashboard">
+	<main class="containers">
+		<Dashboard client:only="svelte" />
+	</main>
+</Layout>

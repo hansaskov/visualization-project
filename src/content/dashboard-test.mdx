@@ -1,0 +1,54 @@
+---
+layout: ../layouts/DashboardLayout.astro
+title: Video Games Sales Analysis
+---
+import VegaLiteChart from '../components/VegaLiteChart.svelte';
+import { queries } from '../queries/queries';
+
+# Video Games Sales Analysis Dashboard
+
+This dashboard presents various analyses of video game sales data across different dimensions.
+
+## Sales Distribution by Region
+
+Here we can see how video game sales are distributed across different regions:
+
+<VegaLiteChart 
+  client:load
+  queryString={queries.find(q => q.name === "7. Pie chart of total Games sold by region").duckdbQuery}
+  configString={queries.find(q => q.name === "7. Pie chart of total Games sold by region").vegaLiteQuery}
+  title="Regional Sales Distribution"
+/>
+
+## Genre Performance Over Time
+
+This visualization shows how different genres have performed over time:
+
+<VegaLiteChart 
+  client:load
+  queryString={queries.find(q => q.name === "Sales percentage over time grouped by genre").duckdbQuery}
+  configString={queries.find(q => q.name === "Sales percentage over time grouped by genre").vegaLiteQuery}
+  title="Genre Market Share Evolution"
+/>
+
+## Platform Market Share
+
+The evolution of gaming platforms' market share:
+
+<VegaLiteChart 
+  client:load
+  queryString={queries.find(q => q.name === "Sales percentage over time grouped by platform").duckdbQuery}
+  configString={queries.find(q => q.name === "Sales percentage over time grouped by platform").vegaLiteQuery}
+  title="Platform Market Share Evolution"
+/>
+
+## Critical Reception Analysis
+
+Comparing critic and user scores across genres:
+
+<VegaLiteChart 
+  client:load
+  queryString={queries.find(q => q.name === "Critics vs user score compared by genre over time").duckdbQuery}
+  configString={queries.find(q => q.name === "Critics vs user score compared by genre over time").vegaLiteQuery}
+  title="Critic vs User Scores by Genre"
+/>
