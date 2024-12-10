@@ -728,7 +728,7 @@ SELECT * FROM NormalizedSales;`,
     "type": "nominal",
     "axis": {
       "title": "Region",
-      "labelAngle": -45,
+      "labelAngle": 360,
       "labelFontSize": 12,
       "labelPadding": 10
     },
