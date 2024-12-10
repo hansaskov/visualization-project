@@ -898,7 +898,7 @@ ORDER BY release_year ASC;`,
         "field": "Platform",
         "type": "nominal",
         "axis": {
-          "labelAngle": -45,
+          "labelAngle": 360,
           "title": "Platform"
         },
         "sort": [
