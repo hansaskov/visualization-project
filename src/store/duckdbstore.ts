@@ -26,10 +26,10 @@ const createDuckDBStore = () => {
   async function initialize() {
     try {
       // Check if we already have an initialized instance in this session
-      let storeValue: DuckDBStore;
+      let storeValue: DuckDBStore | undefined;
       subscribe(value => { storeValue = value; })();
       
-      if (storeValue.isInitialized) {
+      if (storeValue?.isInitialized) {
         return;
       }
 
@@ -99,10 +99,10 @@ const createDuckDBStore = () => {
   }
 
   async function executeQuery(queryString: string): Promise<Record<string, any>[] | Error> {
-    let storeValue: DuckDBStore;
+    let storeValue: DuckDBStore | undefined;
     subscribe(value => { storeValue = value; })();
 
-    if (!storeValue.connection) {
+    if (!storeValue?.connection) {
       return new Error('DuckDB connection not initialized');
     }
 
@@ -117,13 +117,13 @@ const createDuckDBStore = () => {
 
   // Cleanup function
   async function cleanup() {
-    let storeValue: DuckDBStore;
+    let storeValue: DuckDBStore | undefined;
     subscribe(value => { storeValue = value; })();
 
-    if (storeValue.connection) {
+    if (storeValue?.connection) {
       await storeValue.connection.close();
     }
-    if (storeValue.db) {
+    if (storeValue?.db) {
       await storeValue.db.terminate();
     }
 
