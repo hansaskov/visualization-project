@@ -714,13 +714,20 @@ SELECT * FROM NormalizedSales;`,
   vegaLiteQuery: `{
 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 "description": "Game Sales Heatmap by Genre and Region (Region-wise Percentages)",
-"title": "Game Sales Heatmap by Genre and Region",
+ "title": {
+      "text": "Sales Of Video Game Genres Across Geographical Regions",
+      "subtitle": "Japan really likes Role playing games compared to the rest of the world",
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "subtitleFontSize": 14,
+      "subtitleColor": "#666666",
+      "offset": 20,
+      "subtitlePadding": 15
+    },
 "width": 350,
 "height": 350,
 "mark": {
-  "type": "rect",
-  "stroke": "white",
-  "strokeWidth": 4
+  "type": "rect"
 },
 "encoding": {
   "x": {
@@ -891,7 +898,7 @@ ORDER BY release_year ASC;`,
         "field": "Platform",
         "type": "nominal",
         "axis": {
-          "labelAngle": -45,
+          "labelAngle": 360,
           "title": "Platform"
         },
         "sort": [

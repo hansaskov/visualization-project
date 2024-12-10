@@ -1,11 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Query from '../components/Query.svelte';
+import DashboardComponent from '../components/DashboardComponent.svelte';
 ---
-    
-<Layout title="Visualization Project">
+
+<Layout title="Dashboard">
 	<main class="containers">
-        <Query client:only="svelte" />
+		<DashboardComponent client:only="svelte" />
 	</main>
 </Layout>
-

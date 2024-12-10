@@ -156,12 +156,12 @@
 	}
 
 	.alert-success {
-		background-color: #d1fae5;
+		background-color: #4b6959;
 		border: 1px solid #34d399;
 	}
 
 	.alert-error {
-		background-color: #fee2e2;
+		background-color: #f8fafc;
 		border: 1px solid #f87171;
 	}
 
@@ -173,6 +173,19 @@
 		font-size: 2rem;
 		font-weight: bold;
 		margin-bottom: 1.5rem;
+	}
+
+	h2 {
+		color: #f8fafc;
+	}
+
+	h3 {
+		color: #f8fafc;
+		font-weight: 600;
+	}
+
+	p {
+		color: #cbd5e1;
 	}
 
 	section {
