@@ -713,10 +713,10 @@ NormalizedSales AS (
 SELECT * FROM NormalizedSales;`,
   vegaLiteQuery: `{
 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-"description": "Game Sales Heatmap by Genre and Region (Region-wise Percentages)",
+"description": "Video Game Genre Dominance Based on Geographical Location",
  "title": {
       "text": "Sales Of Video Game Genres Across Geographical Regions",
-      "subtitle": "Japan really likes Role playing games compared to the rest of the world",
+      "subtitle": "Role-Playing games are the most popular genre in Japan, Action games are universally popular, and Shooter and Sports games does best outside of Japan",
       "fontSize": 20,
       "fontWeight": "bold",
       "subtitleFontSize": 14,
@@ -724,8 +724,8 @@ SELECT * FROM NormalizedSales;`,
       "offset": 20,
       "subtitlePadding": 15
     },
-"width": 350,
-"height": 350,
+"width": 250,
+"height": 500,
 "mark": {
   "type": "rect"
 },
