@@ -228,25 +228,6 @@
 				</VisDescription>
 			</VisualizationSection>
 
-			<!-- 7. TOP GENRES PIE CHART -->
-			<VisualizationSection
-				queryName="Top 5 most popular genres by sales"
-			>
-				<VisTitle slot="title" title="Top 5 Genres by Global Sales">
-					<p class="subtitle">
-						A focused view on the most successful video game genres
-					</p>
-				</VisTitle>
-				<VisDescription slot="description">
-					<p>
-						The pie chart highlights the top 5 video game genres
-						based on global sales, while grouping the remaining
-						genres under 'Others'. It helps identify market-leading
-						genres.
-					</p>
-				</VisDescription>
-			</VisualizationSection>
-
 			<!-- 8. SALES BY REGION PIE CHART -->
 			<VisualizationSection
 				queryName="7. Pie chart of total Games sold by region"
@@ -279,6 +260,22 @@
 						This heatmap displays the percentage of total sales for
 						each genre across regions. It highlights regional
 						preferences and dominant genres globally.
+					</p>
+				</VisDescription>
+			</VisualizationSection>
+
+			<!-- 9. HEATMAP GENRE SALES BY PLATFORM -->
+			<VisualizationSection
+				queryName="9. Which genres sells the best on different platforms"
+			>
+				<VisTitle slot="title" title="Comparing game sales between platforms and genres">
+					<p class="subtitle">
+						missing
+					</p>
+				</VisTitle>
+				<VisDescription slot="description">
+					<p>
+						write here
 					</p>
 				</VisDescription>
 			</VisualizationSection>

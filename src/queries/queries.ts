@@ -1,10 +1,4 @@
-export type QuerySelection = {
-	name: string;
-	duckdbQuery: string;
-	vegaLiteQuery: string;
-};
-
-export const queries: QuerySelection[] = [
+export const queries = [
 	{
 		name: "Select All",
 		duckdbQuery: `SELECT *
@@ -23,11 +17,20 @@ LIMIT 10`,
     "width": 950,
     "height": 300,
     "mark": "bar",
+    "title": {
+      "text": "All time most popular genres based on sales",
+      "subtitle": "Action games are by far the most popular genre, with adventure games being the least popular",
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "subtitleFontSize": 14,
+      "subtitleColor": "#666666",
+      "offset": 10,
+      "subtitlePadding": 15
+    },
     "encoding": {
         "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre", "axis": {"labelAngle": -360}},
         "y": {"field": "total_sales", "type": "quantitative", "title":"Total Sales"}
-    },
-    "title": "Top 10 Genres by Global Sales"
+    }
 }`,
 	},
 	{
@@ -41,12 +44,21 @@ LIMIT 10`,
     "mark": "bar",
     "width": 800,
     "height": 400,
+    "title": {
+      "text": "All time most successful publishers based on sales",
+      "subtitle": "EA and Nintendo are in the lead, each with 800-900 million sales",
+      "fontSize": 20,
+      "fontWeight": "bold",
+      "subtitleFontSize": 14,
+      "subtitleColor": "#666666",
+      "offset": 10,
+      "subtitlePadding": 15
+    },
     "transform": [{"calculate": "split(datum.Publisher, ' ')", "as": "Publisher"}],
     "encoding": {
         "x": {"field": "Publisher", "type": "nominal", "sort": "-y", "title": "Genre", "axis" : {"labelAngle": -360}},
         "y": {"field": "total_global_sales", "type": "quantitative", "title": "Total Global Sales (millions)"}
-    },
-    "title": "Top 10 Publishers by Global Sales"
+    }
 }
 `,
 	},
@@ -55,20 +67,30 @@ LIMIT 10`,
 		name: "Top 10 platforms by Critic Score",
 		duckdbQuery: `SELECT Platform, AVG(Critic_Score) AS avg_critic_score, CAST(COUNT(*) AS INT) AS game_count
 FROM data
-WHERE Critic_Score IS NOT NULL
 GROUP BY Platform
 HAVING COUNT(*) > 10
 ORDER BY avg_critic_score DESC
 LIMIT 10
 `,
 		vegaLiteQuery: `{
-  "mark": "circle",
+  "mark": "bar",
   "width": 800,
   "height": 400,
+  "title": {
+    "text": "All time most liked platforms based on critic reviews ",
+    "subtitle": ["Dreamcast is ahead as the most liked platform by critics.", "PC holds the throne after the dreamcast"],
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "subtitleFontSize": 14,
+    "subtitleColor": "#666666",
+    "offset": 10,
+    "subtitlePadding": 15
+  },
   "encoding": {
     "x": {
       "field": "Platform",
       "type": "nominal",
+      "sort": "-y",
       "axis": {"labelAngle": -360}
     },
     "y": {
@@ -76,12 +98,6 @@ LIMIT 10
       "type": "quantitative",
       "title": "Average Critic Score",
       "scale": {"zero": false}
-    },
-    "size": {
-      "field": "game_count",
-      "type": "quantitative",
-      "title": "Number of Games",
-      "scale": {"range": [20, 1000]}
     }
   }
 }
@@ -172,7 +188,17 @@ WHERE "Global_Sales" IS NOT NULL;`,
     "text": "Boxplot of Global Sales",
     "subtitle": ["Max Value is missing do to extreme difference.", "Max global sales was Wii Sports with 82.53 million", "", "The 1 indicates that the max lies above 1"]
   },
-  "width": 300,
+  "title": {
+    "text": "Distribution of \'global sales\' ",
+    "subtitle": ["50% of all videogames will sell between 110.000 and 755.000 copies.", "One max value is redacted from the graph do to extreme difference"],
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "subtitleFontSize": 14,
+    "subtitleColor": "#666666",
+    "offset": 20,
+    "subtitlePadding": 15
+  },
+  "width": 600,
   "height": 400,
   "layer": [
     {
@@ -364,7 +390,16 @@ FROM data
 WHERE "Critic_Score" IS NOT NULL
   AND TRY_CAST("Critic_Score" AS DOUBLE) IS NOT NULL;`,
 		vegaLiteQuery: `{
-  "title": "Boxplot of User and Critic Scores",
+  "title": {
+    "text": "Distribution of \'User reviews\' and \'Critic reviews \' ",
+    "subtitle": ["On average, users give a slightly higher rating than Critics"],
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "subtitleFontSize": 14,
+    "subtitleColor": "#666666",
+    "offset": 20,
+    "subtitlePadding": 15
+  },
   "width": 400,
   "height": 500,
   "layer": [
@@ -530,99 +565,6 @@ WHERE "Critic_Score" IS NOT NULL
     }
   }
 }`,
-	},{
-    name: "Top 5 most popular genres by sales",
-    duckdbQuery: 
-    `SELECT 
-  CASE 
-    WHEN genre IN (
-      SELECT genre 
-      FROM data 
-      GROUP BY genre 
-      ORDER BY SUM(Global_Sales) DESC 
-      LIMIT 5
-    ) THEN genre 
-    ELSE 'Others' 
-  END as genre_group,
-  SUM(Global_Sales) as total_sales
-FROM data
-GROUP BY genre_group
-ORDER BY total_sales DESC;
-    `,
-    vegaLiteQuery: 
-    `{
-  "width": 400,
-  "height": 400,
-  "mark": {
-    "type": "arc",
-    "innerRadius": 100, 
-    "stroke": "#fff", 
-    "strokeWidth": 2
-  },
-  "encoding": {
-    "theta": {"field": "total_sales", "type": "quantitative"},
-    "color": {
-      "field": "genre_group",
-      "type": "nominal",
-      "title": "Genre",
-      "scale": {"scheme": "category10"},
-      "legend": {"titleFontSize": 14, "labelFontSize": 12}
-    },
-    "tooltip": [
-      {"field": "genre_group", "type": "nominal", "title": "Genre"},
-      {
-        "field": "total_sales",
-        "type": "quantitative",
-        "title": "Global Sales (millions)",
-        "format": ".2f"
-      }
-    ]
-  },
-  "title": {
-    "text": "Global Video Game Sales by Genre (in millions)",
-    "fontSize": 18,
-    "fontWeight": "bold",
-    "anchor": "middle",
-    "color": "#333"
-  },
-  "transform": [
-    {
-      "calculate": "'Genre: ' + datum.genre_group + ', Sales: ' + format(datum.total_sales, '.2f') + 'M'",
-      "as": "label"
-    }
-  ],
-  "encoding": {
-    "theta": {"field": "total_sales", "type": "quantitative"},
-    "color": {
-      "field": "genre_group",
-      "type": "nominal",
-      "title": "Genre",
-      "scale": {"scheme": "category10"}
-    },
-    "tooltip": [
-      {"field": "genre_group", "type": "nominal", "title": "Genre"},
-      {
-        "field": "total_sales",
-        "type": "quantitative",
-        "title": "Global Sales (millions)",
-        "format": ".2f"
-      }
-    ],
-    "text": {"field": "label"}
-  },
-  "mark": {
-    "type": "arc",
-    "innerRadius": 100,
-    "outerRadius": 200,
-    "stroke": "#fff",
-    "strokeWidth": 2
-  },
-  "config": {
-    "view": {"stroke": null},
-    "arc": {"labelRadius": 160, "labelFontSize": 12}
-  }
-}
-`
 	},
   {
     name: "7. Pie chart of total Games sold by region",
@@ -649,8 +591,18 @@ FROM data
 ORDER BY sales DESC;`,
     vegaLiteQuery:
     `{
-  "width": 400,
+  "width":500,
   "height": 400,
+  "title": {
+    "text": "Distibution of sales across the world",
+    "subtitle": ["North America and Europe have the majority of all sales"],
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "subtitleFontSize": 14,
+    "subtitleColor": "#666666",
+    "offset": 10,
+    "subtitlePadding": 15
+  },
   "mark": {
     "type": "arc",
     "innerRadius": 100,
@@ -676,13 +628,6 @@ ORDER BY sales DESC;`,
         "format": ".2f"
       }
     ]
-  },
-  "title": {
-    "text": "Video Game Sales Distribution by Region",
-    "fontSize": 18,
-    "fontWeight": "bold",
-    "anchor": "middle",
-    "color": "#333"
   },
   "transform": [
     {
@@ -798,7 +743,17 @@ GROUP BY Year_of_Release, Genre
 ORDER BY release_year ASC;`,
  
     vegaLiteQuery: `{
-        "title": "Evolution of Video Game Genres Market Share (1996-Present)",
+  "title": {
+    "text": "Evolution of Video Game Genres Market Share (1996-Present)",
+    "subtitle": ["Select Genres on the side to focus specic lines. Shift + Click to select multiple"],
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "subtitleFontSize": 14,
+    "subtitleColor": "#666666",
+    "offset": 20,
+    "subtitlePadding": 15
+  },
+  
   "width": 800,
   "height": 600,
    "mark": {"type":"line", "strokeWidth": 3},
@@ -848,8 +803,8 @@ ORDER BY release_year ASC;`,
     }`
 },
 {
-  "name": "9. Which genres sells the best on different platforms",
-  "duckdbQuery": `
+  name: "9. Which genres sells the best on different platforms",
+  duckdbQuery: `
     WITH platform_totals AS (
       SELECT
         Platform,
@@ -877,7 +832,7 @@ ORDER BY release_year ASC;`,
     GROUP BY d.Platform, d.Genre, pt.platform_total_sales, gt.total_genre_sales
     ORDER BY gt.total_genre_sales DESC, d.Platform, percentage_of_platform DESC;
   `,
-  "vegaLiteQuery": `{
+  vegaLiteQuery: `{
     "width": 700,
     "height": 500,
     "padding": {"top": 30, "bottom": 10, "left": 10, "right": 10},
@@ -965,9 +920,19 @@ ORDER BY release_year ASC;`,
   GROUP BY Year_of_Release, Platform
   ORDER BY release_year ASC;`,
   
-  vegaLiteQuery: `{"title": "Evolution of Gaming Platforms Market Share (1996-Present)",
+  vegaLiteQuery: `{
   "width": 800,
   "height": 600,
+  "title": {
+    "text": "Evolution of Gaming Platforms Market Share (1996-Present)",
+    "subtitle": ["Select Genres on the side to focus specic lines. Shift + Click to select multiple"],
+    "fontSize": 20,
+    "fontWeight": "bold",
+    "subtitleFontSize": 14,
+    "subtitleColor": "#666666",
+    "offset": 20,
+    "subtitlePadding": 15
+  },
    "mark": {"type":"line", "strokeWidth": 3},
   "params": [
     {
@@ -1335,4 +1300,6 @@ ORDER BY release_year ASC;`,
   `
 }
 
-];
+] as const;
+
+export type QueryNames = typeof queries[number]["name"]
