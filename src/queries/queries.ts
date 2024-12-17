@@ -1102,7 +1102,7 @@ ORDER BY release_year ASC;`,
   vegaLiteQuery: `{
     "title": {
     "text": "Comparing reviews from critics and users through the years",
-    "subtitle": "Being above the line, indicates users have given a higher rated review than critics. Critics rated games higher in the mid 2000s. Where users rated games higher in the 2010s ",
+    "subtitle": ["Being above the line, indicates that users have given a higher rated review than critics for that year and gerne",  "Critics rated games higher in the mid 2000s. Where users rated games higher in the 2010s "],
     "fontSize": 20,
     "fontWeight": "bold",
     "subtitleFontSize": 14,
@@ -1110,7 +1110,7 @@ ORDER BY release_year ASC;`,
     "offset": 10,
     "subtitlePadding": 15
   },
-    "width": 600,
+    "width": 800,
     "height": 400,
     "params": [
       {
