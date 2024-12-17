@@ -617,7 +617,7 @@ ORDER BY total_sales DESC;
 `
 	},
   {
-    name: "7. Pie chart of total Games sold by region ",
+    name: "7. Pie chart of total Games sold by region",
     duckdbQuery:
     `SELECT 
     'North America' as region,
