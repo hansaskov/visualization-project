@@ -360,6 +360,22 @@
 				</p>
 			</VisDescription>
 		</VisualizationSection>
+
+
+		<VisualizationSection
+			queryName="13. evolution in age rating"
+		>
+			<VisTitle slot="title" title="Evolution in Age Ratings for Released Video Games Over Time">
+				<p class="subtitle">
+					This graph shows the evolution in Age Rating for video games released between 1985 and 2016.   
+				</p>
+			</VisTitle>
+			<VisDescription slot="description">
+				<p>
+					TBA
+				</p>
+			</VisDescription>
+		</VisualizationSection>
 		</div>
 	{/if}
 </section>
