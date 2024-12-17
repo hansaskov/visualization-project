@@ -1108,7 +1108,7 @@ ORDER BY release_year ASC;`,
             "type": "quantitative",
             "title": "Average Critic Score",
             "scale": {
-              "domain": [6, 7.5],
+              "domain": [6, 8],
               "zero": false
             }
           },
@@ -1117,7 +1117,7 @@ ORDER BY release_year ASC;`,
             "type": "quantitative",
             "title": "Average User Score",
             "scale": {
-              "domain": [6.5, 8],
+              "domain": [6, 8],
               "zero": false
             }
           },
@@ -1193,11 +1193,11 @@ ORDER BY release_year ASC;`,
   },
   "params": [{
     "name": "year_selection",
-    "value": 2005,
+    "value": 2006,
     "bind": {
       "input": "range",
-      "min": 2005,
-      "max": 2013,
+      "min": 1996,
+      "max": 2016,
       "step": 1,
       "name": "Year Selection: "
     }
