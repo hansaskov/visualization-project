@@ -13,20 +13,21 @@ LIMIT 50`,
 		vegaLiteQuery: "",
 	},
 	{
-		name: "Top 10 publishers",
+		name: "Top 10 genres by global sales",
 		duckdbQuery: `SELECT genre, SUM("Global_Sales") AS total_sales
 FROM data
 GROUP BY genre
 ORDER BY total_sales DESC
 LIMIT 10`,
 		vegaLiteQuery: `{
-    "width": 800,
-    "height": 400,
+    "width": 950,
+    "height": 300,
     "mark": "bar",
     "encoding": {
-        "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre"},
+        "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre", "axis": {"labelAngle": -360}},
         "y": {"field": "total_sales", "type": "quantitative", "title":"Total Sales"}
-    }
+    },
+    "title": "Top 10 Genres by Global Sales"
 }`,
 	},
 	{
@@ -40,9 +41,10 @@ LIMIT 10`,
     "mark": "bar",
     "width": 800,
     "height": 400,
+    "transform": [{"calculate": "split(datum.Publisher, ' ')", "as": "Publisher"}],
     "encoding": {
-        "y": {"field": "Publisher", "type": "nominal", "sort": "-x", "title": "Publisher"},
-        "x": {"field": "total_global_sales", "type": "quantitative", "title": "Total Global Sales (millions)"}
+        "x": {"field": "Publisher", "type": "nominal", "sort": "-y", "title": "Genre", "axis" : {"labelAngle": -360}},
+        "y": {"field": "total_global_sales", "type": "quantitative", "title": "Total Global Sales (millions)"}
     },
     "title": "Top 10 Publishers by Global Sales"
 }
@@ -67,7 +69,7 @@ LIMIT 10
     "x": {
       "field": "Platform",
       "type": "nominal",
-      "axis": {"labelAngle": -45}
+      "axis": {"labelAngle": -360}
     },
     "y": {
       "field": "avg_critic_score",

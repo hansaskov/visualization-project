@@ -86,10 +86,6 @@
 
 <section>
 	<div class="chart-container">
-		{#if title}
-			<h3 class="text-xl font-semibold mb-4">{title}</h3>
-		{/if}
-
 		{#if isLoading}
 			<div class="loading">
 				<p aria-busy="true">Loading visualization...</p>
