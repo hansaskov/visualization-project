@@ -326,38 +326,40 @@
 			<VisualizationSection
 				queryName="Critics vs user score compared by genre over time"
 			>
-				<VisTitle slot="title" title="Critic vs User Scores Over Time">
+				<VisTitle slot="title" title="Graphing critic reviews with user reviews">
 					<p class="subtitle">
-						Examining agreement between critics and users across
-						genres
+						The following graph plots the average critic and user reviews together grouped by game genre for each year. 
+						The values can range from 0-10, but most values range from 6-8, which is the default range.
+						A line can be seen in the middle of the graph. This is the line of agreement. If you are directly on the line, then the critics and users are in agreement with each other. 
+						But if the point is above this line then users are more positive of the genre, and below the line then the critics are more positive. 
 					</p>
 				</VisTitle>
 				<VisDescription slot="description">
 					<p>
-						This scatter plot compares average critic and user
-						scores by genre, highlighting trends and agreements in
-						video game reception over the years.
+						The points are sized by how many releases there have been for each category this year. This is helpful as it gives the user enough context to allow comparing between the years. 
+						The genres do have different colors, but the effectiveness is limited, due to having too many colors. 
 					</p>
 				</VisDescription>
 			</VisualizationSection>
 
 			<VisualizationSection
-				queryName="10. Critics vs user score difference"
-			>
-				<VisTitle slot="title" title="Critic vs User Scores Over Time">
-					<p class="subtitle">
-						Examining agreement between critics and users across
-						genres
-					</p>
-				</VisTitle>
-				<VisDescription slot="description">
-					<p>
-						This scatter plot compares average critic and user
-						scores by genre, highlighting trends and agreements in
-						video game reception over the years.
-					</p>
-				</VisDescription>
-			</VisualizationSection>
+			queryName="10. Critics vs user score difference"
+		>
+			<VisTitle slot="title" title="Showing the disagreement between critics and users over time">
+				<p class="subtitle">
+					In the following graph you are able to use the slider to select the year. 
+					In the mid 2000s, it is the users who are more positive in their reviews. Where the reviewers generally give a lower score. 
+					Later on, this sentiment flips and the reviewers start to become more positive in their reviews as compared to the users.  
+				</p>
+			</VisTitle>
+			<VisDescription slot="description">
+				<p>
+					A deviation chart was used to more clearly show the agreement and disagreement between user and reviewers. 
+					We color the negative values of our deviation chart, To emphesize the negative values. 
+					We also have a Title and subtitle for a clear understanding of the message. 
+				</p>
+			</VisDescription>
+		</VisualizationSection>
 		</div>
 	{/if}
 </section>

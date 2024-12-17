@@ -86,6 +86,7 @@
 
 <section>
 	<div class="chart-container">
+
 		{#if isLoading}
 			<div class="loading">
 				<p aria-busy="true">Loading visualization...</p>
