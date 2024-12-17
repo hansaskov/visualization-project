@@ -20,6 +20,8 @@ GROUP BY genre
 ORDER BY total_sales DESC
 LIMIT 10`,
 		vegaLiteQuery: `{
+    "width": 800,
+    "height": 400,
     "mark": "bar",
     "encoding": {
         "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre"},
@@ -36,6 +38,8 @@ ORDER BY total_global_sales DESC
 LIMIT 10`,
 		vegaLiteQuery: `{
     "mark": "bar",
+    "width": 800,
+    "height": 400,
     "encoding": {
         "y": {"field": "Publisher", "type": "nominal", "sort": "-x", "title": "Publisher"},
         "x": {"field": "total_global_sales", "type": "quantitative", "title": "Total Global Sales (millions)"}
@@ -57,6 +61,8 @@ LIMIT 10
 `,
 		vegaLiteQuery: `{
   "mark": "circle",
+  "width": 800,
+  "height": 400,
   "encoding": {
     "x": {
       "field": "Platform",
@@ -1048,7 +1054,7 @@ ORDER BY release_year ASC;`,
 
   vegaLiteQuery: `{
     "title": "Genre Performance by User and Critic Scores",
-    "width": 600,
+    "width": 800,
     "height": 400,
     "params": [
       {
