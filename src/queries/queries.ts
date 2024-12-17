@@ -1101,13 +1101,19 @@ ORDER BY release_year ASC;`,
             "field": "avg_critic_score",
             "type": "quantitative",
             "title": "Average Critic Score",
-            "scale": {"domain": [0, 10]}
+            "scale": {
+              "domain": [6, 7.5],
+              "zero": false
+            }
           },
           "y": {
             "field": "avg_user_score",
             "type": "quantitative",
             "title": "Average User Score",
-            "scale": {"domain": [0, 10]}
+            "scale": {
+              "domain": [6.5, 8],
+              "zero": false
+            }
           },
           "size": {
             "field": "num_releases",
