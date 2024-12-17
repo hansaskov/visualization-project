@@ -4,7 +4,7 @@ export type QuerySelection = {
 	vegaLiteQuery: string;
 };
 
-export const queries = [
+export const queries: QuerySelection[] = [
 	{
 		name: "Select All",
 		duckdbQuery: `SELECT *
@@ -20,8 +20,6 @@ GROUP BY genre
 ORDER BY total_sales DESC
 LIMIT 10`,
 		vegaLiteQuery: `{
-    "width": 800,
-    "height": 400,
     "mark": "bar",
     "encoding": {
         "x": {"field": "Genre", "type": "nominal", "sort": "-y", "title":"Genre"},
@@ -38,8 +36,6 @@ ORDER BY total_global_sales DESC
 LIMIT 10`,
 		vegaLiteQuery: `{
     "mark": "bar",
-    "width": 800,
-    "height": 400,
     "encoding": {
         "y": {"field": "Publisher", "type": "nominal", "sort": "-x", "title": "Publisher"},
         "x": {"field": "total_global_sales", "type": "quantitative", "title": "Total Global Sales (millions)"}
@@ -61,8 +57,6 @@ LIMIT 10
 `,
 		vegaLiteQuery: `{
   "mark": "circle",
-  "width": 800,
-  "height": 400,
   "encoding": {
     "x": {
       "field": "Platform",
@@ -623,7 +617,7 @@ ORDER BY total_sales DESC;
 `
 	},
   {
-    name: "7. Pie chart of total Games sold by region",
+    name: "7. Pie chart of total Games sold by region ",
     duckdbQuery:
     `SELECT 
     'North America' as region,
@@ -722,7 +716,7 @@ SELECT * FROM NormalizedSales;`,
 "description": "Video Game Genre Dominance Based on Geographical Location",
  "title": {
       "text": "Sales Of Video Game Genres Across Geographical Regions",
-      "subtitle": "Role-Playing games are the most popular genre in Japan, Action games are universally popular, and Shooter and Sports games does best outside of Japan",
+      "subtitle": ["Role-Playing games are the most popular genre in Japan, Action games are universally popular," ,"and Shooter and Sports games does best outside of Japan"],
       "fontSize": 20,
       "fontWeight": "bold",
       "subtitleFontSize": 14,
@@ -741,7 +735,7 @@ SELECT * FROM NormalizedSales;`,
     "type": "nominal",
     "axis": {
       "title": "Region",
-      "labelAngle": 360,
+      "labelAngle": -45,
       "labelFontSize": 12,
       "labelPadding": 10
     },
@@ -796,62 +790,91 @@ GROUP BY Year_of_Release, Genre
 ORDER BY release_year ASC;`,
  
     vegaLiteQuery: `{
-      "title": "Evolution of Video Game Genres Market Share (1996-Present)",
-      "width": 800,
-      "height": 600,
-      "mark": "area",
-      "params": [{
-        "name": "genre_selection",
-        "select": {"type": "point", "fields": ["genre"]},
-        "bind": "legend"
-      }],
-      "encoding": {
-        "x": {
-          "field": "release_year",
-          "type": "quantitative",
-          "title": "Year of Release",
-          "scale": {
-            "domainMin": 1996,
-            "type": "linear"
-          },
-          "axis": {
-            "format": "d",
-            "domain": false,
-            "tickSize": 0
-          }
-        },
-        "y": {
-          "field": "market_share_percentage",
-          "type": "quantitative",
-          "title": "Market Share (%)",
-          "stack": "normalize"
-        },
-        "color": {
-          "field": "genre",
-          "type": "nominal",
-          "title": "Genre",
-          "scale": {"scheme": "tealblues"}
-        },
-        "opacity": {
-          "condition": {"param": "genre_selection", "value": 1},
-          "value": 0.2
-        },
-        "tooltip": [
-          {"field": "genre", "type": "nominal", "title": "Genre"},
-          {
-            "field": "market_share_percentage",
-            "type": "quantitative",
-            "format": ".1f",
-            "title": "Market Share (%)"
-          },
-          {"field":"release_year", "type":"quantitative", "title": "Year"}
+        "title": "Evolution of Gaming Platforms Market Share (1996-Present)",
+  "width": 800,
+  "height": 600,
+  "mark": "line",
+  "params": [
+    {
+      "name": "platform_selection",
+      "select": {"type": "point", "fields": ["platform"]},
+      "bind": "legend"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "release_year",
+      "type": "quantitative",
+      "title": "Year of Release",
+      "scale": {"domainMin": 1996, "type": "linear"},
+      "axis": {"format": "d", "domain": false, "tickSize": 2}
+    },
+    "y": {
+      "field": "market_share_percentage",
+      "type": "quantitative",
+      "title": "Market Share (%)"
+    },
+    "color": {
+      "field": "platform",
+      "type": "nominal",
+      "title": "Platform",
+      "scale": {
+        "domain": [
+          "PS",
+          "PS2",
+          "PS3",
+          "PS4",
+          "PSP",
+          "PSV",
+          "XB",
+          "X360",
+          "XOne",
+          "GC",
+          "Wii",
+          "WiiU",
+          "GBA",
+          "DS",
+          "3DS",
+          "PC",
+          "DC"
+        ],
+        "range": [
+          "#234565",
+          "#2b567d",
+          "#336696",
+          "#3a76ae",
+          "#4cc5c5",
+          "#63cdce",
+          "#2f551e",
+          "#3c6d26",
+          "#48852e",
+          "#b280d5",
+          "#c197de",
+          "#cfafe6",
+          "#c96160",
+          "#d27877",
+          "#da908f",
+          "#404040",
+          "#cfae44"
         ]
+      }
+    },
+    "opacity": {
+      "condition": {"param": "platform_selection", "value": 1},
+      "value": 0.2
+    },
+    "tooltip": [
+      {"field": "platform", "type": "nominal", "title": "Platform"},
+      {
+        "field": "market_share_percentage",
+        "type": "quantitative",
+        "format": ".1f",
+        "title": "Market Share (%)"
       },
-      "transform": [
-        {
-          "filter": "datum.market_share_percentage > 0"
-        }
-      ]
+      {"field": "release_year", "type": "quantitative", "title": "Year"}
+    ]
+  },
+  "transform": [{"filter": "datum.market_share_percentage > 0"}]
     }`
 },
 {
@@ -972,73 +995,91 @@ ORDER BY release_year ASC;`,
   GROUP BY Year_of_Release, Platform
   ORDER BY release_year ASC;`,
   
-  vegaLiteQuery: `{
-    "title": "Evolution of Gaming Platforms Market Share (1996-Present)",
-    "width": 800,
-    "height": 600,
-    "mark": "area",
-    "params": [
-      {
-        "name": "platform_selection",
-        "select": {"type": "point", "fields": ["platform"]},
-        "bind": "legend"
+  vegaLiteQuery: `{"title": "Evolution of Gaming Platforms Market Share (1996-Present)",
+  "width": 800,
+  "height": 600,
+  "mark": "line",
+  "params": [
+    {
+      "name": "platform_selection",
+      "select": {"type": "point", "fields": ["platform"]},
+      "bind": "legend"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "release_year",
+      "type": "quantitative",
+      "title": "Year of Release",
+      "scale": {"domainMin": 1996, "type": "linear"},
+      "axis": {"format": "d", "domain": false, "tickSize": 2}
+    },
+    "y": {
+      "field": "market_share_percentage",
+      "type": "quantitative",
+      "title": "Market Share (%)"
+    },
+    "color": {
+      "field": "platform",
+      "type": "nominal",
+      "title": "Platform",
+      "scale": {
+        "domain": [
+          "PS",
+          "PS2",
+          "PS3",
+          "PS4",
+          "PSP",
+          "PSV",
+          "XB",
+          "X360",
+          "XOne",
+          "GC",
+          "Wii",
+          "WiiU",
+          "GBA",
+          "DS",
+          "3DS",
+          "PC",
+          "DC"
+        ],
+        "range": [
+          "#234565",
+          "#2b567d",
+          "#336696",
+          "#3a76ae",
+          "#4cc5c5",
+          "#63cdce",
+          "#2f551e",
+          "#3c6d26",
+          "#48852e",
+          "#b280d5",
+          "#c197de",
+          "#cfafe6",
+          "#c96160",
+          "#d27877",
+          "#da908f",
+          "#404040",
+          "#cfae44"
+        ]
       }
-    ],
-    "encoding": {
-      "x": {
-        "field": "release_year",
-        "type": "quantitative",
-        "title": "Year of Release",
-        "scale": {"domainMin": 1996, "type": "linear"},
-        "axis": {"format": "d", "domain": false, "tickSize": 0}
-      },
-      "y": {
+    },
+    "opacity": {
+      "condition": {"param": "platform_selection", "value": 1},
+      "value": 0.2
+    },
+    "tooltip": [
+      {"field": "platform", "type": "nominal", "title": "Platform"},
+      {
         "field": "market_share_percentage",
         "type": "quantitative",
-        "title": "Market Share (%)",
-        "stack": "normalize"
+        "format": ".1f",
+        "title": "Market Share (%)"
       },
-      "color": {
-        "field": "platform",
-        "type": "nominal",
-        "title": "Platform",
-        "scale": {
-		      "domain": [
-          		"PS", "PS2", "PS3", "PS4",
-          		"PSP", "PSV",
-          		"XB", "X360", "XOne",
-          		"GC", "Wii", "WiiU",
-          		"GBA", "DS", "3DS", 
-          		"PC",
-          		"DC"
-        	],
-        	"range": [
-          		"#234565", "#2b567d", "#336696", "#3a76ae",
-          		"#4cc5c5", "#63cdce",
-          		"#2f551e", "#3c6d26", "#48852e",
-          		"#b280d5", "#c197de", "#cfafe6",
-          		"#c96160", "#d27877", "#da908f",
-          		"#404040",
-          		"#cfae44"
-        	]
-        }
-      },
-      "opacity": {
-        "condition": {"param": "platform_selection", "value": 1},
-        "value": 0.2
-      },
-      "tooltip": [
-        {"field": "platform", "type": "nominal", "title": "Platform"},
-        {
-          "field": "market_share_percentage",
-          "type": "quantitative",
-          "format": ".1f",
-          "title": "Market Share (%)"
-        },
-        {"field":"release_year", "type":"quantitative", "title": "Year"}
-      ]
-    },
-    "transform": [{"filter": "datum.market_share_percentage > 0"}]
+      {"field": "release_year", "type": "quantitative", "title": "Year"}
+    ]
+  },
+  "transform": [{"filter": "datum.market_share_percentage > 0"}]
   }`
 },
 {
@@ -1054,7 +1095,7 @@ ORDER BY release_year ASC;`,
 
   vegaLiteQuery: `{
     "title": "Genre Performance by User and Critic Scores",
-    "width": 800,
+    "width": 600,
     "height": 400,
     "params": [
       {
@@ -1250,9 +1291,6 @@ ORDER BY release_year ASC;`,
     }
   }
 }`
-} 
+}
 
-] as const;
-
-
-export type QueryNames = typeof queries[number]["name"] 
+];
