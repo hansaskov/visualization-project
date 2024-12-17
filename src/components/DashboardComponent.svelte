@@ -264,6 +264,24 @@
 					</p>
 				</VisDescription>
 			</VisualizationSection>
+
+			<VisualizationSection
+			queryName="10. Critics vs user score difference"
+		>
+			<VisTitle slot="title" title="Critic vs User Scores Over Time">
+				<p class="subtitle">
+					Examining agreement between critics and users across
+					genres
+				</p>
+			</VisTitle>
+			<VisDescription slot="description">
+				<p>
+					This scatter plot compares average critic and user
+					scores by genre, highlighting trends and agreements in
+					video game reception over the years.
+				</p>
+			</VisDescription>
+		</VisualizationSection>
 		</div>
 	{/if}
 </section>

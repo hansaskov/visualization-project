@@ -1,15 +1,15 @@
 <script lang="ts">
-	import type { QueryNames } from '../types/queries';
-	import { getQueryByName } from '../types/queries';
+
 	import VegaLiteChart from './VegaLiteChart.svelte';
 	import VisTitle from './visualization/VisTitle.svelte';
 	import VisDescription from './visualization/VisDescription.svelte';
+    import { queries, type QueryNames } from '../queries/queries';
 
 	// This will provide type suggestions for all available queries
 	export let queryName: QueryNames;
 
 	// Get the query using our type guard
-	$: query = getQueryByName(queryName);
+	$: query = queries.find(query => query.name === queryName);
 
 	function sanitizeData(data: any) {
 		try {

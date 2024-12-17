@@ -4,7 +4,7 @@ export type QuerySelection = {
 	vegaLiteQuery: string;
 };
 
-export const queries: QuerySelection[] = [
+export const queries = [
 	{
 		name: "Select All",
 		duckdbQuery: `SELECT *
@@ -1250,6 +1250,9 @@ ORDER BY release_year ASC;`,
     }
   }
 }`
-}
+} 
 
-];
+] as const;
+
+
+export type QueryNames = typeof queries[number]["name"] 
