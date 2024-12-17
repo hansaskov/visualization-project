@@ -796,14 +796,14 @@ GROUP BY Year_of_Release, Genre
 ORDER BY release_year ASC;`,
  
     vegaLiteQuery: `{
-        "title": "Evolution of Gaming Platforms Market Share (1996-Present)",
+        "title": "Evolution of Video Game Genres Market Share (1996-Present)",
   "width": 800,
   "height": 600,
-  "mark": "line",
+   "mark": {"type":"line", "strokeWidth": 3},
   "params": [
     {
-      "name": "platform_selection",
-      "select": {"type": "point", "fields": ["platform"]},
+      "name": "genre_selection",
+      "select": {"type": "point", "fields": ["genre"]},
       "bind": "legend"
     }
   ],
@@ -813,7 +813,7 @@ ORDER BY release_year ASC;`,
       "type": "quantitative",
       "title": "Year of Release",
       "scale": {"domainMin": 1996, "type": "linear"},
-      "axis": {"format": "d", "domain": false, "tickSize": 2}
+      "axis": {"format": "d", "domain": false, "tickSize": 0}
     },
     "y": {
       "field": "market_share_percentage",
@@ -821,56 +821,18 @@ ORDER BY release_year ASC;`,
       "title": "Market Share (%)"
     },
     "color": {
-      "field": "platform",
+      "field": "genre",
       "type": "nominal",
-      "title": "Platform",
-      "scale": {
-        "domain": [
-          "PS",
-          "PS2",
-          "PS3",
-          "PS4",
-          "PSP",
-          "PSV",
-          "XB",
-          "X360",
-          "XOne",
-          "GC",
-          "Wii",
-          "WiiU",
-          "GBA",
-          "DS",
-          "3DS",
-          "PC",
-          "DC"
-        ],
-        "range": [
-          "#234565",
-          "#2b567d",
-          "#336696",
-          "#3a76ae",
-          "#4cc5c5",
-          "#63cdce",
-          "#2f551e",
-          "#3c6d26",
-          "#48852e",
-          "#b280d5",
-          "#c197de",
-          "#cfafe6",
-          "#c96160",
-          "#d27877",
-          "#da908f",
-          "#404040",
-          "#cfae44"
-        ]
-      }
+      "title": "Genre",
+      "scale": {"scheme": "category10"},
+      "strokeWidth": 10
     },
     "opacity": {
-      "condition": {"param": "platform_selection", "value": 1},
+      "condition": {"param": "genre_selection", "value": 1},
       "value": 0.2
     },
     "tooltip": [
-      {"field": "platform", "type": "nominal", "title": "Platform"},
+      {"field": "genre", "type": "nominal", "title": "Genre"},
       {
         "field": "market_share_percentage",
         "type": "quantitative",
@@ -1004,7 +966,7 @@ ORDER BY release_year ASC;`,
   vegaLiteQuery: `{"title": "Evolution of Gaming Platforms Market Share (1996-Present)",
   "width": 800,
   "height": 600,
-  "mark": "line",
+   "mark": {"type":"line", "strokeWidth": 3},
   "params": [
     {
       "name": "platform_selection",
