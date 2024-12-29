@@ -1,9 +1,8 @@
 <script lang="ts">
-
 	import VegaLiteChart from './VegaLiteChart.svelte';
 	import VisTitle from './visualization/VisTitle.svelte';
 	import VisDescription from './visualization/VisDescription.svelte';
-    import { queries, type QueryNames } from '../queries/queries';
+	import { queries, type QueryNames } from '../queries/queries';
 
 	// This will provide type suggestions for all available queries
 	export let queryName: QueryNames;
@@ -30,11 +29,10 @@
 	
 	<div class="chart-container">
 		{#if query}
-                <VegaLiteChart
-                    queryString={query.duckdbQuery}
-                    configString={sanitizeData(query.vegaLiteQuery)}
-                    title={query.name}
-                />
+				<VegaLiteChart
+					queryString={query.duckdbQuery}
+					configString={sanitizeData(query.vegaLiteQuery)}
+				/>
 		{:else}
 			<p class="error">Query not found: {queryName}</p>
 		{/if}
@@ -57,13 +55,16 @@
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 		display: flex;
 		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		gap: 1rem;
 	}
 
 	.chart-container {
-
-		border-radius: 0.5rem;
+		display: flex;
+		width: auto;
 		overflow: hidden;
+
 	}
 
 	.error {
