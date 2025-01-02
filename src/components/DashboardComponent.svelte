@@ -86,7 +86,7 @@
 					descriptions of the insights and methodology used.
 				</p>
 				<p class="text-slate-300">
-					The developers of this dashboard are Hans Askov, Michael Pedersen and Sandra ... <br>
+					The developers of this dashboard are Hans Askov, Michael Pedersen and Sandra Malling-Larsen <br>
 					You can find the source code for this dashboard <a href="https://github.com/hansaskov/videogamesales" class="text-blue-500">here</a>.
 
 				</p>
